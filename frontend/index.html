@@ -1,0 +1,1888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base" content="">
+    <title>MenStation - Premium Barbershop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ── CSS VARIABLES ────────────────────────────────── */
+        :root {
+            --bg:        #0f1f1a;
+            --bg2:       #132620;
+            --bg3:       #1b3a2f;
+            --border:    #29463b;
+            --text:      #eef4ed;
+            --muted:     #9daf9f;
+            --accent:    #3e6b57;
+            --accent-h:  #4f8068;
+            --accent-dim:rgba(62,107,87,0.18);
+            --highlight: #a3c9a8;
+            --success:   #2ecc71;
+            --font-d:    'Bebas Neue', cursive;
+            --font-b:    'DM Sans', sans-serif;
+            --font-m:    'JetBrains Mono', monospace;
+            --r:         10px;
+            --shadow:    0 8px 40px rgba(0,0,0,0.6);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-b);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 15px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg2); }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; }
+
+        /* ── NAVBAR ───────────────────────────────────────── */
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            padding: 0 48px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(15,31,26,0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-logo {
+            font-family: var(--font-d);
+            font-size: 28px;
+            letter-spacing: 2px;
+            color: var(--text);
+        }
+        .navbar-logo span { color: var(--accent); }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .navbar-links a {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+        }
+        .navbar-links a:hover { color: var(--text); }
+
+        .navbar-cta {
+            background: var(--accent);
+            color: #fff !important;
+            padding: 9px 22px;
+            border-radius: 6px;
+            font-weight: 600 !important;
+            transition: background 0.2s !important;
+        }
+        .navbar-cta:hover { background: var(--accent-h) !important; color: #fff !important; }
+
+        .navbar-mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px; left: 0; right: 0;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--border);
+            padding: 20px 24px;
+            z-index: 99;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .mobile-menu.open { display: flex; }
+        .mobile-menu a {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .mobile-menu a:last-child { border-bottom: none; }
+
+        /* ── HERO ─────────────────────────────────────────── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background pattern */
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(rgba(15,31,26,0.68), rgba(15,31,26,0.9)),
+                url('https://images.unsplash.com/photo-1759134248487-e8baaf31e33e?auto=format&fit=crop&w=1600&q=80') center/cover;
+            pointer-events: none;
+        }
+
+        /* Large background label */
+        .hero-bg-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-d);
+            font-size: clamp(100px, 18vw, 260px);
+            color: rgba(255,255,255,0.02);
+            letter-spacing: 8px;
+            pointer-events: none;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+        .hero-eyebrow {
+            font-family: var(--font-m);
+            font-size: 12px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .hero-eyebrow::before,
+        .hero-eyebrow::after {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.5;
+        }
+
+        .hero-title {
+            font-family: var(--font-d);
+            font-size: clamp(56px, 10vw, 120px);
+            line-height: 0.95;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+        .hero-title .accent { color: var(--accent); }
+        .hero-title .block { display: block; }
+
+        .hero-sub {
+            font-size: clamp(15px, 2vw, 18px);
+            color: var(--muted);
+            max-width: 520px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary:hover { background: var(--accent-h); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(62,107,87,0.35); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            padding: 14px 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-outline:hover { border-color: var(--text); }
+
+        .branch-selector {
+            margin: 34px auto 0;
+            max-width: 320px;
+        }
+
+        .branch-selector label {
+            display: block;
+            color: var(--muted);
+            font-family: var(--font-m);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .branch-selector select {
+            width: 100%;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            padding: 12px 14px;
+            font: inherit;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            justify-content: center;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat-item { text-align: center; }
+        .hero-stat-num {
+            font-family: var(--font-d);
+            font-size: 44px;
+            color: var(--accent);
+            line-height: 1;
+        }
+        .hero-stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        /* ── SECTION SHARED ───────────────────────────────── */
+        section { padding: 100px 48px; }
+        .section-inner { max-width: 1200px; margin: 0 auto; }
+        .section-label {
+            font-family: var(--font-m);
+            font-size: 11px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-family: var(--font-d);
+            font-size: clamp(36px, 5vw, 64px);
+            letter-spacing: 1px;
+            line-height: 1.05;
+            margin-bottom: 16px;
+        }
+        .section-desc {
+            color: var(--muted);
+            font-size: 16px;
+            max-width: 500px;
+            line-height: 1.7;
+            margin-bottom: 48px;
+        }
+        .divider { width: 48px; height: 3px; background: var(--accent); margin: 16px 0 32px; }
+
+        /* ── SERVICES ─────────────────────────────────────── */
+        #services { background: var(--bg2); }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
+
+        .service-card {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            min-height: 100%;
+        }
+
+        .service-card-image {
+            aspect-ratio: 4 / 3;
+            background: linear-gradient(135deg, rgba(79, 130, 98, 0.2), rgba(15, 31, 26, 0.9));
+            overflow: hidden;
+        }
+
+        .service-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .service-card-body {
+            padding: 22px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .service-name {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .service-footer {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .service-price {
+            font-family: var(--font-d);
+            font-size: 28px;
+            color: var(--accent);
+        }
+
+        .service-duration {
+            font-size: 12px;
+            color: var(--muted);
+            font-family: var(--font-m);
+        }
+
+        .service-empty {
+            padding: 48px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        /* ── BARBERS ──────────────────────────────────────── */
+        #barbers { background: var(--bg); }
+
+        .barbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .barber-card {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.25s;
+        }
+        .barber-card:hover { transform: translateY(-4px); border-color: rgba(163,201,168,0.35); }
+
+        .barber-avatar {
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-d);
+            font-size: 30px;
+            color: #fff;
+            margin: 0 auto 16px;
+            border: 3px solid rgba(163,201,168,0.3);
+            overflow: hidden;
+        }
+
+        .barber-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .barber-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .barber-spec {
+            font-size: 13px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-family: var(--font-m);
+        }
+
+        .barber-bio {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .barbers-empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 48px;
+            grid-column: 1 / -1;
+        }
+
+        /* ── ABOUT ────────────────────────────────────────── */
+        #about { background: var(--bg2); }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .about-image {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            aspect-ratio: 4/3;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent, rgba(15,31,26,0.18));
+            z-index: 1;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .about-features {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .about-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .about-feature-icon {
+            width: 36px; height: 36px;
+            background: var(--accent-dim);
+            border: 1px solid rgba(163,201,168,0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--highlight);
+            flex-shrink: 0;
+        }
+
+        .about-feature-text strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        .about-feature-text span {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        /* ── HOURS + CONTACT ──────────────────────────────── */
+        #contact { background: var(--bg); }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .info-card {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 32px;
+        }
+
+        .info-card h3 {
+            font-family: var(--font-d);
+            font-size: 28px;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        .hours-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .hours-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .hours-row:last-child { border-bottom: none; }
+        .hours-day { color: var(--muted); }
+        .hours-time { color: var(--text); font-weight: 600; font-family: var(--font-m); font-size: 13px; }
+
+        .contact-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            background: var(--bg2);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            transition: border-color 0.2s;
+        }
+        .contact-item:hover { border-color: rgba(163,201,168,0.35); }
+
+        .contact-icon {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--highlight);
+            letter-spacing: 0.08em;
+            width: 40px; height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent-dim);
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .contact-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .contact-value { font-size: 14px; font-weight: 500; }
+
+        /* ── GALLERY ──────────────────────────────────────── */
+        /* ── CTA BANNER ───────────────────────────────────── */
+        .cta-banner {
+            background: linear-gradient(135deg, #0f1f1a 0%, var(--accent) 100%);
+            padding: 80px 48px;
+            text-align: center;
+        }
+
+        .cta-banner h2 {
+            font-family: var(--font-d);
+            font-size: clamp(36px, 5vw, 72px);
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .cta-banner p {
+            font-size: 16px;
+            opacity: 0.85;
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-btn {
+            background: #fff;
+            color: var(--accent);
+            padding: 16px 40px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+
+        /* ── FOOTER ───────────────────────────────────────── */
+        footer {
+            background: var(--bg2);
+            border-top: 1px solid var(--border);
+            padding: 40px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-logo {
+            font-family: var(--font-d);
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+        .footer-logo span { color: var(--accent); }
+
+        .footer-copy {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+        .footer-links a {
+            font-size: 13px;
+            color: var(--muted);
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--text); }
+
+        /* ── SCROLL REVEAL ────────────────────────────────── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── LOADER ───────────────────────────────────────── */
+        .loading-dots::after {
+            content: '...';
+            animation: dots 1.2s steps(3, end) infinite;
+        }
+        @keyframes dots {
+            0%   { content: '.'; }
+            33%  { content: '..'; }
+            66%  { content: '...'; }
+        }
+
+        /* ── RESPONSIVE ───────────────────────────────────── */
+        .navbar-logo-mark {
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(163,201,168,0.45);
+            border-radius: 8px;
+            background: rgba(62,107,87,0.14);
+        }
+        .hero {
+            justify-content: flex-start;
+            text-align: left;
+            background:
+                linear-gradient(90deg, rgba(10,10,10,0.94) 0%, rgba(10,10,10,0.78) 48%, rgba(10,10,10,0.38) 100%),
+                url('https://images.unsplash.com/photo-1599351431202-1e0f0137899a?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
+        }
+        .hero-bg-text { display: none; }
+        .hero-content { max-width: 720px; margin-left: max(24px, 8vw); }
+        .hero-eyebrow, .hero-actions, .hero-stats { justify-content: flex-start; }
+        .hero-stat-item { text-align: left; }
+        .reservation-grid {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            gap: 28px;
+            align-items: start;
+        }
+        .reservation-panel,
+        .reservation-form-card {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            padding: 28px;
+        }
+        .reservation-panel strong { display: block; font-size: 15px; margin-bottom: 8px; }
+        .reservation-panel p { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 18px; }
+        .reservation-form { display: grid; gap: 14px; }
+        .reservation-form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .reservation-form label {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .reservation-form input,
+        .reservation-form select {
+            width: 100%;
+            min-height: 44px;
+            background: #0d0d0d;
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font: inherit;
+        }
+
+        .reservation-service-picker {
+            display: grid;
+            gap: 10px;
+            max-height: 230px;
+            overflow: auto;
+            padding: 12px;
+            background: #0d0d0d;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .reservation-service-option {
+            display: grid;
+            grid-template-columns: 20px 1fr auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reservation-service-option:hover,
+        .reservation-service-option:has(input:checked) {
+            border-color: rgba(163,201,168,0.35);
+            background: rgba(62,107,87,0.14);
+        }
+
+        .reservation-service-option input {
+            width: 18px;
+            min-height: 18px;
+            accent-color: var(--accent);
+        }
+
+        .reservation-service-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .reservation-service-meta,
+        .reservation-summary {
+            color: var(--muted);
+            font-size: 12px;
+            font-family: var(--font-m);
+        }
+
+        .reservation-summary {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: rgba(62,107,87,0.1);
+        }
+
+        .reservation-ticket {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            padding: 24px;
+            background: rgba(4, 9, 7, 0.72);
+            backdrop-filter: blur(10px);
+            color: var(--text);
+            font-size: 14px;
+            overflow: auto;
+        }
+        .reservation-ticket.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ticket-card {
+            display: grid;
+            gap: 12px;
+            color: var(--text);
+            width: min(760px, 100%);
+            padding: 28px;
+            border: 1px solid rgba(163,201,168,0.42);
+            border-radius: 10px;
+            background: #173f2f;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.42);
+        }
+
+        .ticket-card h3 {
+            margin: 0 0 4px;
+            font-size: 20px;
+        }
+
+        .ticket-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 6px;
+        }
+
+        .ticket-label {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .ticket-value {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        .ticket-note {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .ticket-save-btn {
+            margin-top: 8px;
+            min-height: 38px;
+            border: 1px solid rgba(163,201,168,0.35);
+            border-radius: 6px;
+            background: rgba(62,107,87,0.18);
+            color: var(--text);
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .ticket-actions {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+        }
+
+        .ticket-close-btn {
+            margin-top: 8px;
+            min-height: 38px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--muted);
+            font: inherit;
+            cursor: pointer;
+            padding: 0 16px;
+        }
+        .barber-gallery {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 16px;
+        }
+        .barber-gallery-item {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            background: #12221c;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .barber-gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .barber-gallery-empty {
+            grid-column: 1 / -1;
+            color: var(--muted);
+            border: 1px dashed var(--border);
+            border-radius: 6px;
+            padding: 14px;
+            font-size: 12px;
+        }
+
+        @media (max-width: 1024px) {
+        }
+
+        @media (max-width: 768px) {
+            section { padding: 72px 24px; }
+            .navbar { padding: 0 24px; }
+            .navbar-links { display: none; }
+            .navbar-mobile-toggle { display: block; }
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            .hero-content { margin-left: 0; }
+            .reservation-grid { grid-template-columns: 1fr; }
+            .service-carousel-top { align-items: flex-start; flex-direction: column; }
+            .service-slide { grid-template-columns: 1fr; }
+            .service-slide-image { min-height: 220px; }
+            .service-slide-body { padding: 24px; }
+            .service-name { font-size: 26px; }
+            .about-image { display: none; }
+            .contact-grid { grid-template-columns: 1fr; }
+            footer { flex-direction: column; text-align: center; }
+            .cta-banner { padding: 60px 24px; }
+        }
+
+        @media (max-width: 480px) {
+            .reservation-form-row { grid-template-columns: 1fr; }
+            .hero-stats { gap: 24px; }
+            .ticket-row { flex-direction: column; gap: 2px; }
+            .ticket-value { text-align: left; }
+            .ticket-actions { grid-template-columns: 1fr; }
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            .reservation-ticket.show,
+            .reservation-ticket.show * { visibility: visible; }
+            .reservation-ticket.show {
+                position: static;
+                display: block;
+                background: #fff;
+                color: #111;
+                padding: 0;
+            }
+            .ticket-card {
+                box-shadow: none;
+                background: #fff;
+                color: #111;
+                border-color: #111;
+            }
+            .ticket-actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════ -->
+<nav class="navbar" id="navbar">
+    <div class="navbar-logo"><span class="navbar-logo-mark">MS</span></div>
+
+    <ul class="navbar-links">
+        <li><a href="#reservation">Book Reservation</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#barbers">Barbers</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="login.html" class="navbar-cta">Staff Login</a></li>
+    </ul>
+
+    <button class="navbar-mobile-toggle" id="mobile-toggle">☰</button>
+</nav>
+
+<!-- Mobile menu -->
+<div class="mobile-menu" id="mobile-menu">
+    <a href="#reservation" onclick="closeMobileMenu()">Book Reservation</a>
+    <a href="#services" onclick="closeMobileMenu()">Services</a>
+    <a href="#barbers" onclick="closeMobileMenu()">Barbers</a>
+    <a href="#about" onclick="closeMobileMenu()">About</a>
+    <a href="#contact" onclick="closeMobileMenu()">Contact</a>
+    <a href="login.html" style="color:var(--accent);font-weight:700;">Staff Login →</a>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section id="home" class="hero">
+    <div class="hero-bg-text">MS</div>
+    <div class="hero-content">
+        <div class="hero-eyebrow">Premium Barbershop - Valenzuela City</div>
+        <h1 class="hero-title">
+            <span class="block">WHERE</span>
+            <span class="block">EVERY <span class="accent">CUT</span></span>
+            <span class="block">TELLS A STORY</span>
+        </h1>
+        <p class="hero-sub" id="hero-tagline">
+            Step into MenStation - where modern style meets classic craftsmanship.
+            Expert grooming, clean lines, and confident style.
+        </p>
+            <div class="hero-actions">
+                <a href="#reservation" class="btn-primary">Book Reservation</a>
+                <a href="#services" class="btn-outline">View Services</a>
+            </div>
+
+        <div class="hero-stats">
+            <div class="hero-stat-item">
+                <div class="hero-stat-num">5+</div>
+                <div class="hero-stat-label">Expert Barbers</div>
+            </div>
+            <div class="hero-stat-item">
+                <div class="hero-stat-num">1K+</div>
+                <div class="hero-stat-label">Happy Clients</div>
+            </div>
+            <div class="hero-stat-item">
+                <div class="hero-stat-num">8+</div>
+                <div class="hero-stat-label">Services Offered</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     SERVICES
+════════════════════════════════════════ -->
+<section id="reservation">
+    <div class="section-inner">
+        <div class="reveal">
+            <div class="section-label">Walk In Ready</div>
+            <h2 class="section-title">BOOK RESERVATION</h2>
+            <div class="divider"></div>
+            <p class="section-desc">Reserve a chair without creating an account. Staff will confirm bookings from the dashboard.</p>
+        </div>
+
+        <div class="reservation-grid">
+            <div class="reservation-panel reveal">
+                <strong>No account required</strong>
+                <p>Choose your service, barber, date, and time. After submitting, keep the ticket number shown on screen.</p>
+                <strong>Status</strong>
+                <p>New reservations are saved as pending until staff confirms them.</p>
+                <strong>Shop hours</strong>
+                <p>Weekdays 9:00 AM to 8:00 PM. Weekends 8:00 AM to 9:00 PM.</p>
+            </div>
+
+            <div class="reservation-form-card reveal">
+                <form class="reservation-form" id="reservation-form">
+                    <div>
+                        <label for="reservation-branch">Branch</label>
+                        <select id="reservation-branch" required>
+                            <option value="">Loading branches...</option>
+                        </select>
+                    </div>
+                    <div class="reservation-form-row">
+                        <div>
+                            <label for="reservation-name">Name</label>
+                            <input id="reservation-name" type="text" required>
+                        </div>
+                        <div>
+                            <label for="reservation-phone">Phone</label>
+                            <input id="reservation-phone" type="tel" required>
+                        </div>
+                    </div>
+
+                    <div class="reservation-form-row">
+                        <div>
+                            <label>Services</label>
+                            <div class="reservation-service-picker" id="reservation-service-list">
+                                <div class="reservation-service-meta">Loading services...</div>
+                            </div>
+                            <div class="reservation-summary" id="reservation-summary">
+                                <span>No services selected</span>
+                                <span>0 min - PHP 0.00</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="reservation-barber">Barber</label>
+                            <select id="reservation-barber" required>
+                                <option value="">Loading barbers...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="reservation-form-row">
+                        <div>
+                            <label for="reservation-date">Date</label>
+                            <input id="reservation-date" type="date" required>
+                        </div>
+                        <div>
+                            <label for="reservation-time">Time</label>
+                            <input id="reservation-time" type="time" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="reservation-submit">Submit Reservation</button>
+                    <div class="reservation-ticket" id="reservation-ticket"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="services">
+    <div class="section-inner">
+        <div class="reveal">
+            <div class="section-label">What We Offer</div>
+            <h2 class="section-title">OUR SERVICES</h2>
+            <div class="divider"></div>
+            <p class="section-desc">Professional grooming services tailored for the modern Filipino man.</p>
+        </div>
+        <div class="services-grid" id="services-grid">
+            <!-- Loaded dynamically from API -->
+            <div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--muted);">
+                <span class="loading-dots">Loading services</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     BARBERS
+════════════════════════════════════════ -->
+<section id="barbers">
+    <div class="section-inner">
+        <div class="reveal">
+            <div class="section-label">Meet The Team</div>
+            <h2 class="section-title">OUR BARBERS</h2>
+            <div class="divider"></div>
+            <p class="section-desc">Skilled professionals dedicated to giving you the perfect cut every time.</p>
+        </div>
+        <div class="barbers-grid" id="barbers-grid">
+            <div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--muted);">
+                <span class="loading-dots">Loading barbers</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     ABOUT
+════════════════════════════════════════ -->
+<section id="about">
+    <div class="section-inner">
+        <div class="about-grid">
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1759134248487-e8baaf31e33e?auto=format&fit=crop&w=1200&q=80" alt="MenStation shop interior">
+            </div>
+            <div class="reveal">
+                <div class="section-label">Our Story</div>
+                <h2 class="section-title">ABOUT MENSTATION</h2>
+                <div class="divider"></div>
+                <p id="about-text" style="color:var(--muted);font-size:15px;line-height:1.8;margin-bottom:24px;">
+                    MenStation is a premium barbershop dedicated to the modern Filipino man.
+                </p>
+                <div class="about-features">
+                    <div class="about-feature">
+                        <div class="about-feature-icon">01</div>
+                        <div class="about-feature-text">
+                            <strong>Expert Craftsmanship</strong>
+                            <span>Every barber is trained in both classic and contemporary techniques.</span>
+                        </div>
+                    </div>
+                    <div class="about-feature">
+                        <div class="about-feature-icon">02</div>
+                        <div class="about-feature-text">
+                            <strong>Premium Products</strong>
+                            <span>We only use high-quality grooming products on your hair.</span>
+                        </div>
+                    </div>
+                    <div class="about-feature">
+                        <div class="about-feature-icon">03</div>
+                        <div class="about-feature-text">
+                            <strong>Your Style, Your Way</strong>
+                            <span>Personalized consultations to achieve your perfect look.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     GALLERY
+════════════════════════════════════════ -->
+
+<!-- ════════════════════════════════════════
+     CONTACT + HOURS
+════════════════════════════════════════ -->
+<section id="contact">
+    <div class="section-inner">
+        <div class="reveal">
+            <div class="section-label">Visit Us</div>
+            <h2 class="section-title">CONTACT & HOURS</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="contact-grid">
+
+            <!-- Contact Info -->
+            <div class="info-card reveal">
+                <h3>GET IN TOUCH</h3>
+                <div class="contact-list">
+                    <div class="contact-item">
+                        <div class="contact-icon">AD</div>
+                        <div>
+                            <div class="contact-label">Address</div>
+                            <div class="contact-value" id="contact-address">Loading...</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">PH</div>
+                        <div>
+                            <div class="contact-label">Phone</div>
+                            <div class="contact-value" id="contact-phone">Loading...</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">EM</div>
+                        <div>
+                            <div class="contact-label">Email</div>
+                            <div class="contact-value" id="contact-email">Loading...</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">FB</div>
+                        <div>
+                            <div class="contact-label">Facebook</div>
+                            <div class="contact-value">
+                                <a id="contact-facebook" href="#" target="_blank" style="color:var(--accent)">View Page →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">IG</div>
+                        <div>
+                            <div class="contact-label">Instagram</div>
+                            <div class="contact-value">
+                                <a id="contact-instagram" href="#" target="_blank" style="color:var(--accent)">Follow Us →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operating Hours -->
+            <div class="info-card reveal">
+                <h3>OPERATING HOURS</h3>
+                <div class="hours-list">
+                    <div class="hours-row">
+                        <span class="hours-day">Monday</span>
+                        <span class="hours-time" id="hours-mon">9:00 AM - 8:00 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="hours-day">Tuesday</span>
+                        <span class="hours-time" id="hours-tue">9:00 AM - 8:00 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="hours-day">Wednesday</span>
+                        <span class="hours-time" id="hours-wed">9:00 AM - 8:00 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="hours-day">Thursday</span>
+                        <span class="hours-time" id="hours-thu">9:00 AM - 8:00 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="hours-day">Friday</span>
+                        <span class="hours-time" id="hours-fri">9:00 AM - 8:00 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="hours-day">Saturday</span>
+                        <span class="hours-time" id="hours-sat">8:00 AM - 9:00 PM</span>
+                    </div>
+                    <div class="hours-row">
+                        <span class="hours-day">Sunday</span>
+                        <span class="hours-time" id="hours-sun">8:00 AM - 9:00 PM</span>
+                    </div>
+                </div>
+
+                <!-- Open/Closed badge -->
+                <div id="open-status" style="margin-top:20px;padding:12px;border-radius:8px;text-align:center;font-weight:700;font-size:14px;"></div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- ════════════════════════════════════════
+     CTA BANNER
+════════════════════════════════════════ -->
+<div class="cta-banner">
+    <h2>READY FOR YOUR NEXT CUT?</h2>
+    <p>Walk in anytime or contact us to reserve your spot. Our barbers are ready for you.</p>
+    <a href="#contact" class="cta-btn">Get Directions</a>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer>
+    <div class="footer-logo">MEN<span>STATION</span></div>
+    <div class="footer-copy">&copy; <span id="footer-year"></span> MenStation. All rights reserved.</div>
+    <div class="footer-links">
+        <a href="login.html">Staff Login</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Contact</a>
+    </div>
+</footer>
+
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+// ── CONFIG ─────────────────────────────────────────────────
+const normalizeApiBase = (value) => {
+    const raw = String(value || '').trim();
+    if (!raw) return '/api';
+    return raw.replace(/\/+$/, '').replace(/\/api$/i, '') + '/api';
+};
+const PUBLIC_API_BASE = normalizeApiBase(
+    window.MENSTATION_API_BASE ||
+    document.querySelector('meta[name="api-base"]')?.content ||
+    localStorage.getItem('ms_api_base')
+);
+
+// ── NAVBAR SCROLL EFFECT ───────────────────────────────────
+window.addEventListener('scroll', () => {
+    const navbar = document.getElementById('navbar');
+    if (window.scrollY > 50) {
+        navbar.style.background = 'rgba(15,31,26,0.97)';
+    } else {
+        navbar.style.background = 'rgba(15,31,26,0.9)';
+    }
+});
+
+// ── MOBILE MENU ────────────────────────────────────────────
+document.getElementById('mobile-toggle').addEventListener('click', () => {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('open');
+});
+
+function closeMobileMenu() {
+    document.getElementById('mobile-menu').classList.remove('open');
+}
+
+// ── SCROLL REVEAL ──────────────────────────────────────────
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// ── FOOTER YEAR ────────────────────────────────────────────
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+// ── FORMAT PESO ────────────────────────────────────────────
+const formatPeso = (amount) => '₱' + parseFloat(amount || 0).toLocaleString('en-PH', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+});
+
+let publicServices = [];
+let reservationServices = [];
+let publicBarbers = [];
+let publicBranches = [];
+const normalizePublicBranchValue = (value) => {
+    const raw = String(value ?? '').trim();
+    return !raw || ['all', 'null', 'undefined'].includes(raw.toLowerCase()) ? '' : raw;
+};
+let selectedBranchId = normalizePublicBranchValue(localStorage.getItem('ms_public_branch_id'));
+let lastTicketData = null;
+
+const resolveAssetUrl = (url) => {
+    if (!url) return '';
+    if (/^(https?:|data:)/i.test(url)) return url;
+    if (url.startsWith('/')) return PUBLIC_API_BASE.replace('/api', '') + url;
+    return url;
+};
+
+const imageMarkup = (src, alt) => src ? `<img src="${resolveAssetUrl(src)}" alt="${alt}" loading="lazy">` : '';
+
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[ch]));
+
+// ── OPEN/CLOSED STATUS ─────────────────────────────────────
+function checkOpenStatus() {
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay(); // 0=Sun, 1=Mon...6=Sat
+
+    let openHour = 9, closeHour = 20;
+    if (day === 0 || day === 6) { openHour = 8; closeHour = 21; } // Weekend
+
+    const statusEl = document.getElementById('open-status');
+    if (hour >= openHour && hour < closeHour) {
+        statusEl.style.background = 'rgba(46,204,113,0.15)';
+        statusEl.style.border = '1px solid #2ecc71';
+        statusEl.style.color = '#2ecc71';
+        statusEl.textContent = 'OPEN now';
+    } else {
+        statusEl.style.background = 'rgba(231,76,60,0.15)';
+        statusEl.style.border = '1px solid #e74c3c';
+        statusEl.style.color = '#e74c3c';
+        statusEl.textContent = 'CLOSED now';
+    }
+}
+
+checkOpenStatus();
+
+// ── LOAD PUBLIC SHOP INFO FROM API ─────────────────────────
+const serviceDuration = (service) => parseInt(service.duration || service.duration_minutes || 30, 10);
+const serviceImage = (service) => service.image || service.image_url || '';
+
+function renderServicesGrid(services) {
+    const items = services || [];
+    if (!items.length) return `<div class="service-empty">No services listed yet.</div>`;
+
+    return items.map(service => {
+        const image = serviceImage(service);
+        return `
+            <article class="service-card reveal">
+                <div class="service-card-image">
+                    ${image ? `<img src="${resolveAssetUrl(image)}" alt="${escapeHtml(service.name)}" loading="lazy">` : ''}
+                </div>
+                <div class="service-card-body">
+                    <div class="service-name">${escapeHtml(service.name)}</div>
+                    <div class="service-footer">
+                        <div class="service-price">${formatPeso(service.price)}</div>
+                        <div class="service-duration">${serviceDuration(service)} min</div>
+                    </div>
+                </div>
+            </article>`;
+    }).join('');
+}
+
+function refreshServicesGrid() {
+    const servicesGrid = document.getElementById('services-grid');
+    if (!servicesGrid) return;
+    servicesGrid.innerHTML = renderServicesGrid(publicServices);
+    document.querySelectorAll('#services-grid .reveal').forEach(el => revealObserver.observe(el));
+}
+
+function renderReservationOptions() {
+    const branchSelect = document.getElementById('reservation-branch');
+    const heroBranchSelect = document.getElementById('branch-selector');
+    const servicePicker = document.getElementById('reservation-service-list');
+    const barberSelect = document.getElementById('reservation-barber');
+    const dateInput = document.getElementById('reservation-date');
+
+    if (dateInput && !dateInput.min) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+    }
+
+    const branchOptions = publicBranches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+    [branchSelect, heroBranchSelect].forEach(select => {
+        if (!select) return;
+        select.innerHTML = branchOptions || '<option value="">No branches available</option>';
+        select.value = selectedBranchId || (publicBranches[0]?.id || '');
+    });
+
+    if (servicePicker) {
+        const branchServices = selectedBranchId
+            ? reservationServices.filter(s => !s.branch_id || String(s.branch_id) === String(selectedBranchId))
+            : reservationServices;
+
+        if (!branchServices.length) {
+            servicePicker.innerHTML = '<div class="reservation-service-meta">No services available for this branch.</div>';
+        } else {
+            servicePicker.innerHTML = branchServices.map(s => `
+                <label class="reservation-service-option">
+                    <input type="checkbox"
+                           name="reservation-service"
+                           value="${s.id}"
+                           data-price="${s.price}"
+                           data-duration="${serviceDuration(s)}">
+                        <span>
+                            <span class="reservation-service-name">${escapeHtml(s.name)}</span>
+                            <span class="reservation-service-meta">${serviceDuration(s)} min</span>
+                        </span>
+                    <span class="reservation-service-meta">${formatPeso(s.price)}</span>
+                </label>
+            `).join('');
+            servicePicker.querySelectorAll('input[type="checkbox"]').forEach(input => {
+                input.addEventListener('change', updateReservationSummary);
+            });
+        }
+        updateReservationSummary();
+    }
+
+    if (barberSelect) {
+        const branchBarbers = selectedBranchId
+            ? publicBarbers.filter(b => String(b.branch_id) === String(selectedBranchId))
+            : publicBarbers;
+        barberSelect.innerHTML = '<option value="">Select barber...</option>' + branchBarbers.map(b =>
+            `<option value="${b.id}">${b.full_name}${b.specialization ? ` - ${b.specialization}` : ''}</option>`
+        ).join('');
+    }
+}
+
+function getSelectedServices() {
+    return [...document.querySelectorAll('input[name="reservation-service"]:checked')]
+        .map(input => reservationServices.find(s => String(s.id) === String(input.value)))
+        .filter(Boolean);
+}
+
+function updateReservationSummary() {
+    const summary = document.getElementById('reservation-summary');
+    if (!summary) return;
+    const services = getSelectedServices();
+    const totalPrice = services.reduce((sum, s) => sum + parseFloat(s.price || 0), 0);
+    const totalDuration = services.reduce((sum, s) => sum + serviceDuration(s), 0);
+    summary.innerHTML = `
+        <span>${services.length ? `${services.length} service${services.length > 1 ? 's' : ''} selected` : 'No services selected'}</span>
+        <span>${totalDuration} min - ${formatPeso(totalPrice)}</span>
+    `;
+}
+
+async function setPublicBranch(branchId) {
+    selectedBranchId = normalizePublicBranchValue(branchId);
+    localStorage.setItem('ms_public_branch_id', selectedBranchId);
+    await loadPublicInfo(selectedBranchId);
+}
+
+['branch-selector', 'reservation-branch'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', (e) => {
+        setPublicBranch(e.target.value);
+    });
+});
+
+async function fetchPublicServices(view = 'public') {
+    const params = new URLSearchParams();
+    if (selectedBranchId) params.set('branch_id', selectedBranchId);
+    if (view === 'reservation') params.set('view', 'reservation');
+    const query = params.toString() ? `?${params.toString()}` : '';
+    const res = await fetch(`${PUBLIC_API_BASE}/public/services${query}`);
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'Unable to load services.');
+    return data.data || [];
+}
+
+async function fetchPublicBarbers(seedBarbers = []) {
+    let barbers = seedBarbers;
+    try {
+        const query = selectedBranchId ? `?branch_id=${encodeURIComponent(selectedBranchId)}` : '';
+        const res = await fetch(`${PUBLIC_API_BASE}/public/barbers${query}`);
+        const data = await res.json();
+        if (data.success) barbers = data.data || [];
+    } catch (err) {}
+
+    return Promise.all((barbers || []).map(async (barber) => {
+        try {
+            const worksRes = await fetch(`${PUBLIC_API_BASE}/barber/work-images/${barber.id}`);
+            const worksData = await worksRes.json();
+            if (worksData.success) return { ...barber, gallery: worksData.data || [] };
+        } catch (err) {}
+        return { ...barber, gallery: barber.gallery || [] };
+    }));
+}
+
+function renderBarbers(barbers) {
+    if (!barbers || !barbers.length) {
+        return `
+            <div class="barbers-empty">
+                <p>Our barber profiles are coming soon.</p>
+            </div>`;
+    }
+
+    return barbers.map(b => {
+        const initials = b.full_name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        const avatar = b.profile_photo
+            ? `<img src="${b.profile_photo}" alt="${b.full_name} profile photo" loading="lazy">`
+            : initials;
+        const works = (b.gallery || []).slice(0, 6);
+        const gallery = works.length
+            ? works.map(work => `<div class="barber-gallery-item">${imageMarkup(work.image_url, `${b.full_name} work`)}</div>`).join('')
+            : '<div class="barber-gallery-empty">Portfolio images coming soon.</div>';
+
+        return `
+            <div class="barber-card reveal">
+                <div class="barber-avatar">${avatar}</div>
+                <div class="barber-name">${b.full_name}</div>
+                <div class="barber-spec">${b.specialization || 'Barber'}</div>
+                <div class="barber-bio">${b.bio || 'Skilled barber dedicated to giving you the best cut.'}</div>
+                <div class="barber-gallery">${gallery}</div>
+            </div>`;
+    }).join('');
+}
+
+function renderReservationTicket(ticket, data) {
+    const services = ticket.services || [];
+    const totalCost = ticket.service_price || services.reduce((sum, s) => sum + parseFloat(s.price || 0), 0);
+    const branch = publicBranches.find(b => String(b.id) === String(ticket.branch_id));
+    const barber = publicBarbers.find(b => String(b.id) === String(ticket.barber_id));
+    const ticketData = {
+        ticket_number: ticket.ticket_number || data.ticket_number || `MS-${String(data.reservation_id || '').padStart(5, '0')}`,
+        customer_name: ticket.customer_name || document.getElementById('reservation-name').value.trim(),
+        services: services.map(s => s.name).join(', '),
+        barber_name: ticket.barber_name || barber?.full_name || '',
+        branch_name: ticket.branch_name || branch?.name || '',
+        date_time: `${ticket.res_date || document.getElementById('reservation-date').value} ${String(ticket.res_time || document.getElementById('reservation-time').value).slice(0, 5)}`,
+        total_cost: totalCost,
+        payment_note: 'Walk-in payment only',
+        reminder: 'Arriving late in reserved hours will be cancelled.'
+    };
+    lastTicketData = ticketData;
+
+    return `
+        <div class="ticket-card" id="ticket-card">
+            <h3>${escapeHtml(ticketData.ticket_number)}</h3>
+            <div class="ticket-row"><span class="ticket-label">Customer</span><span class="ticket-value">${escapeHtml(ticketData.customer_name)}</span></div>
+            <div class="ticket-row"><span class="ticket-label">Services</span><span class="ticket-value">${escapeHtml(ticketData.services)}</span></div>
+            <div class="ticket-row"><span class="ticket-label">Barber</span><span class="ticket-value">${escapeHtml(ticketData.barber_name)}</span></div>
+            <div class="ticket-row"><span class="ticket-label">Branch</span><span class="ticket-value">${escapeHtml(ticketData.branch_name)}</span></div>
+            <div class="ticket-row"><span class="ticket-label">Date & Time</span><span class="ticket-value">${escapeHtml(ticketData.date_time)}</span></div>
+            <div class="ticket-row"><span class="ticket-label">Total Cost</span><span class="ticket-value">${formatPeso(ticketData.total_cost)}</span></div>
+            <div class="ticket-note">${escapeHtml(ticketData.payment_note)}</div>
+            <div class="ticket-note">${escapeHtml(ticketData.reminder)}</div>
+            <div class="ticket-actions">
+                <button type="button" class="ticket-save-btn" onclick="saveTicketAsImage()">Save as Image</button>
+                <button type="button" class="ticket-close-btn" onclick="closeReservationTicket()">Close</button>
+            </div>
+        </div>`;
+}
+
+function closeReservationTicket() {
+    const ticket = document.getElementById('reservation-ticket');
+    if (!ticket) return;
+    ticket.classList.remove('show');
+    ticket.textContent = '';
+}
+
+function showReservationTicketMessage(message) {
+    const ticket = document.getElementById('reservation-ticket');
+    if (!ticket) return;
+    ticket.innerHTML = `
+        <div class="ticket-card">
+            <h3>Reservation Notice</h3>
+            <div class="ticket-note">${escapeHtml(message)}</div>
+            <div class="ticket-actions">
+                <button type="button" class="ticket-close-btn" onclick="closeReservationTicket()">Close</button>
+            </div>
+        </div>`;
+    ticket.classList.add('show');
+}
+
+function saveTicketAsImage() {
+    if (!lastTicketData) return;
+    const rows = [
+        ['Ticket', lastTicketData.ticket_number],
+        ['Customer', lastTicketData.customer_name],
+        ['Services', lastTicketData.services],
+        ['Barber', lastTicketData.barber_name],
+        ['Branch', lastTicketData.branch_name],
+        ['Date & Time', lastTicketData.date_time],
+        ['Total Cost', formatPeso(lastTicketData.total_cost)],
+        ['Payment', lastTicketData.payment_note],
+        ['Reminder', lastTicketData.reminder]
+    ];
+    const canvas = document.createElement('canvas');
+    canvas.width = 920;
+    canvas.height = 620;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#0f1f1a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#1b3a2f';
+    ctx.fillRect(36, 36, canvas.width - 72, canvas.height - 72);
+    ctx.strokeStyle = '#3e6b57';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(36, 36, canvas.width - 72, canvas.height - 72);
+    ctx.fillStyle = '#eef4ed';
+    ctx.font = '700 36px Arial';
+    ctx.fillText('MENSTATION RESERVATION', 70, 92);
+    ctx.font = '700 28px Arial';
+    ctx.fillStyle = '#a3c9a8';
+    ctx.fillText(lastTicketData.ticket_number, 70, 132);
+    ctx.font = '20px Arial';
+    let y = 180;
+    rows.slice(1).forEach(([label, value]) => {
+        ctx.fillStyle = '#b7c6b8';
+        ctx.fillText(label, 70, y);
+        ctx.fillStyle = '#eef4ed';
+        wrapCanvasText(ctx, String(value || ''), 260, y, 570, 26);
+        y += label === 'Services' || label === 'Reminder' ? 76 : 48;
+    });
+    const link = document.createElement('a');
+    link.download = `${lastTicketData.ticket_number}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+}
+
+function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = text.split(' ');
+    let line = '';
+    for (const word of words) {
+        const testLine = line ? `${line} ${word}` : word;
+        if (ctx.measureText(testLine).width > maxWidth && line) {
+            ctx.fillText(line, x, y);
+            line = word;
+            y += lineHeight;
+        } else {
+            line = testLine;
+        }
+    }
+    ctx.fillText(line, x, y);
+}
+
+document.getElementById('reservation-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const btn = document.getElementById('reservation-submit');
+    const ticket = document.getElementById('reservation-ticket');
+    const original = btn.textContent;
+
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+    ticket.classList.remove('show');
+    ticket.textContent = '';
+    ticket.removeAttribute('style');
+
+    const selectedServices = getSelectedServices();
+    if (!selectedServices.length) {
+        btn.disabled = false;
+        btn.textContent = original;
+        showReservationTicketMessage('Please select at least one service.');
+        return;
+    }
+
+    const payload = {
+        customer_name: document.getElementById('reservation-name').value.trim(),
+        customer_phone: document.getElementById('reservation-phone').value.trim(),
+        branch_id: parseInt(document.getElementById('reservation-branch').value),
+        service_ids: selectedServices.map(s => parseInt(s.id)),
+        barber_id: parseInt(document.getElementById('reservation-barber').value),
+        date: document.getElementById('reservation-date').value,
+        time: document.getElementById('reservation-time').value
+    };
+
+    try {
+        const res = await fetch(`${PUBLIC_API_BASE}/public/reservations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message || 'Reservation failed.');
+
+        const ticketPayload = data.reservation || {
+            ticket_number: data.ticket_number,
+            customer_name: payload.customer_name,
+            branch_id: payload.branch_id,
+            barber_id: payload.barber_id,
+            services: selectedServices,
+            service_price: selectedServices.reduce((sum, s) => sum + parseFloat(s.price || 0), 0),
+            res_date: payload.date,
+            res_time: payload.time
+        };
+        ticket.innerHTML = renderReservationTicket(ticketPayload, data);
+        ticket.classList.add('show');
+        e.target.reset();
+        renderReservationOptions();
+    } catch (err) {
+        showReservationTicketMessage(err.message || 'Unable to submit reservation. Please try again.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+    }
+});
+
+async function loadPublicInfo(branchId = selectedBranchId) {
+    try {
+        const normalizedBranchId = normalizePublicBranchValue(branchId);
+        const query = normalizedBranchId ? `?branch_id=${encodeURIComponent(normalizedBranchId)}` : '';
+        const res = await fetch(`${PUBLIC_API_BASE}/public/info${query}`);
+        const data = await res.json();
+
+        if (!data.success) return;
+
+        publicBranches = data.branches || publicBranches;
+        selectedBranchId = String(data.branch?.id || normalizedBranchId || publicBranches[0]?.id || '');
+        localStorage.setItem('ms_public_branch_id', selectedBranchId);
+
+        const shop = data.shop;
+        publicServices = await fetchPublicServices('public');
+        reservationServices = await fetchPublicServices('reservation');
+        publicBarbers = data.barbers || [];
+        renderReservationOptions();
+
+        // Update contact info
+        if (shop.shop_address) document.getElementById('contact-address').textContent = shop.shop_address;
+        if (shop.shop_phone)   document.getElementById('contact-phone').textContent   = shop.shop_phone;
+        if (shop.shop_email)   document.getElementById('contact-email').textContent   = shop.shop_email;
+        if (shop.shop_facebook) {
+            const fb = document.getElementById('contact-facebook');
+            fb.href = shop.shop_facebook;
+        }
+        if (shop.shop_instagram) {
+            const ig = document.getElementById('contact-instagram');
+            ig.href = shop.shop_instagram;
+        }
+        if (shop.about_text) document.getElementById('about-text').textContent = shop.about_text;
+
+        // Hours
+        const weekdayTime = shop.shop_hours_weekday
+            ? shop.shop_hours_weekday.replace(/Monday - Friday:/i, '').trim()
+            : '9:00 AM - 8:00 PM';
+        const weekendTime = shop.shop_hours_weekend
+            ? shop.shop_hours_weekend.replace(/Saturday - Sunday:/i, '').trim()
+            : '8:00 AM - 9:00 PM';
+
+        ['mon','tue','wed','thu','fri'].forEach(d => {
+            document.getElementById(`hours-${d}`).textContent = weekdayTime;
+        });
+        ['sat','sun'].forEach(d => {
+            document.getElementById(`hours-${d}`).textContent = weekendTime;
+        });
+
+        // ── SERVICES ─────────────────────────────────────
+        const servicesGrid = document.getElementById('services-grid');
+        if (!publicServices.length) {
+            servicesGrid.innerHTML = '<p style="color:var(--muted);text-align:center;grid-column:1/-1;">No services listed yet.</p>';
+        } else {
+            refreshServicesGrid();
+        }
+
+        // ── BARBERS ───────────────────────────────────────
+        const barbersGrid = document.getElementById('barbers-grid');
+        publicBarbers = await fetchPublicBarbers(data.barbers || []);
+        renderReservationOptions();
+        barbersGrid.innerHTML = renderBarbers(publicBarbers);
+        document.querySelectorAll('.barber-card.reveal').forEach(el => revealObserver.observe(el));
+
+    } catch (error) {
+        publicServices = [];
+        reservationServices = [];
+        publicBarbers = [];
+        renderReservationOptions();
+        document.getElementById('services-grid').innerHTML = '<p style="color:var(--muted);text-align:center;grid-column:1/-1;">No service records could be loaded.</p>';
+        document.getElementById('barbers-grid').innerHTML = `
+            <div class="barbers-empty">
+                <p>No barber records could be loaded.</p>
+            </div>`;
+    }
+}
+
+// Run on page load
+loadPublicInfo();
+</script>
+
+</body>
+</html>
+

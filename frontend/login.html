@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base" content="http://localhost:3000">
+    <title>MenStation - Sign In</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body>
+
+<a class="auth-back-home" href="index.html">&larr; Back to Home</a>
+
+<div class="auth-page">
+
+    <!-- LEFT PANEL: Branding -->
+    <div class="auth-brand">
+        <div class="auth-brand-content">
+            <div class="auth-logo">MEN<span>STATION</span></div>
+            <div class="auth-tagline">Management System</div>
+            <ul class="auth-features">
+                <li>Multi-branch barbershop management</li>
+                <li>Track barber performance and commissions</li>
+                <li>Reservation and cashier system</li>
+                <li>Financial records and reporting</li>
+                <li>Role-based staff access control</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL: Login Form -->
+    <div class="auth-form-panel">
+        <div class="auth-form-container">
+
+            <div class="auth-form-header">
+                <h2>Log In</h2>
+                <p>Access your MenStation dashboard</p>
+            </div>
+
+            <div class="auth-error" id="login-error"></div>
+
+            <form id="login-form" autocomplete="on">
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="your@email.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrap">
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button type="button" class="input-suffix-btn" id="toggle-password">
+                            SHOW
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-submit-btn" id="login-btn">
+                    Log in
+                </button>
+
+            </form>
+
+            <div class="auth-switch" style="margin-top:24px;font-size:12px;">
+                No account? Contact your branch administrator.
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+
+</body>
+</html>

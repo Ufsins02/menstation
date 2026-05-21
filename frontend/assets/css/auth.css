@@ -1,0 +1,468 @@
+/* ============================================================
+   frontend/assets/css/auth.css
+   Login and Signup page styles
+   FIX: CSS variables updated to match current main.css names
+   ============================================================ */
+
+/* ── AUTH LAYOUT ──────────────────────────────────────────── */
+.auth-back-home {
+    position: fixed;
+    top: 18px;
+    left: 18px;
+    z-index: 20;
+    background: rgba(15,31,26,0.84);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.auth-back-home:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.auth-page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #0e100d;
+}
+
+/* ── LEFT PANEL - Branding ────────────────────────────────── */
+.auth-brand {
+    background:
+        linear-gradient(135deg, rgba(14,16,13,0.86), rgba(14,16,13,0.58)),
+        url('https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+    border-right: 1px solid #252820;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background watermark text */
+.auth-brand::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 24% 22%, rgba(93,115,80,0.22), transparent 32%),
+        linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.52));
+    pointer-events: none;
+}
+
+.auth-brand-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 28px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(14,16,13,0.38);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+}
+
+.auth-logo {
+    font-family: 'Barlow Condensed', 'Inter', sans-serif;
+    font-size: 56px;
+    font-weight: 700;
+    color: #e8e6e0;
+    letter-spacing: 4px;
+    line-height: 1;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+/* FIX: .auth-logo span color - using the olive green accent */
+.auth-logo span { color: #5d7350; }
+
+.auth-tagline {
+    font-size: 11px;
+    color: #5a5e50;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* The scissors icon area */
+.auth-scissors {
+    font-size: 48px;
+    margin-bottom: 32px;
+    display: block;
+    opacity: 0.6;
+}
+
+.auth-features {
+    list-style: none;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.auth-features li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #9a9d8a;
+    font-size: 13.5px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Check mark bullet */
+.auth-features li::before {
+    content: 'OK';
+    width: 22px;
+    height: 22px;
+    background: rgba(74,92,63,0.2);
+    border: 1px solid rgba(74,92,63,0.4);
+    color: #5d7350;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 800;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+/* ── RIGHT PANEL - Form ───────────────────────────────────── */
+.auth-form-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 48px;
+    background: #0e100d;
+    overflow-y: auto;
+}
+
+.auth-form-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-form-header {
+    margin-bottom: 32px;
+}
+
+.auth-form-header h2 {
+    font-family: 'Barlow Condensed', 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    color: #e8e6e0;
+}
+
+.auth-form-header p {
+    color: #5a5e50;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── ROLE SELECTOR ────────────────────────────────────────── */
+.role-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.role-option {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Hide the actual radio button visually */
+.role-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.role-card {
+    background: #1d2118;
+    border: 1px solid #252820;
+    border-radius: 4px;
+    padding: 16px 12px;
+    text-align: center;
+    transition: border-color 0.15s, background 0.15s;
+    cursor: pointer;
+}
+
+.role-card .role-icon {
+    font-size: 22px;
+    display: block;
+    margin-bottom: 8px;
+    opacity: 0.7;
+}
+
+.role-card .role-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e8e6e0;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.role-card .role-desc {
+    font-size: 11px;
+    color: #5a5e50;
+    margin-top: 3px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Style when radio is selected */
+.role-option input:checked + .role-card {
+    border-color: #4a5c3f;
+    background: rgba(74,92,63,0.15);
+}
+
+.role-option input:checked + .role-card .role-name {
+    color: #5d7350;
+}
+
+/* ── SUBMIT BUTTON ────────────────────────────────────────── */
+.auth-submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: #4a5c3f;
+    color: #fff;
+    border: 1px solid #4a5c3f;
+    border-radius: 3px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.auth-submit-btn:hover {
+    background: #5d7350;
+    border-color: #5d7350;
+}
+
+.auth-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── SPINNER inside button ────────────────────────────────── */
+/* FIX: Ensure spinner is visible inside the dark button */
+.auth-submit-btn .spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.65s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── SWITCH LINK ──────────────────────────────────────────── */
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #5a5e50;
+    font-family: 'Inter', sans-serif;
+}
+
+.auth-switch a {
+    color: #5d7350;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.auth-switch a:hover { color: #8a9070; }
+
+/* ── INPUT WITH ICON ──────────────────────────────────────── */
+.input-group {
+    position: relative;
+}
+
+.input-group .input-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #5a5e50;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+.input-group input {
+    padding-left: 36px;
+}
+
+.input-toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #5a5e50;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.05em;
+    padding: 4px 6px;
+    border-radius: 3px;
+    transition: color 0.15s;
+}
+
+.input-toggle-password:hover { color: #9a9d8a; }
+
+/* ── ERROR MESSAGE BOX ────────────────────────────────────── */
+/* FIX: Replaced broken var() references with explicit colors */
+.auth-error {
+    background: rgba(138, 64, 64, 0.15);
+    border: 1px solid rgba(138, 64, 64, 0.4);
+    color: #c08080;
+    padding: 11px 14px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 18px;
+    line-height: 1.5;
+    /* Hidden by default */
+    display: none;
+}
+
+/* Shown when .show class is added by JavaScript */
+.auth-error.show {
+    display: block;
+}
+
+/* ── TOAST NOTIFICATION ───────────────────────────────────── */
+/* FIX: Toast needs visible explicit colors */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    z-index: 9999;
+    max-width: 360px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    border-left: 3px solid transparent;
+    transform: translateY(60px);
+    opacity: 0;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast-success {
+    background: #1d2118;
+    border-color: #5a8a5a;
+    color: #8abf8a;
+    border: 1px solid #2e3d27;
+    border-left: 3px solid #5a8a5a;
+}
+
+.toast-error {
+    background: #1d1515;
+    border: 1px solid #3d2020;
+    border-left: 3px solid #8a4040;
+    color: #c08080;
+}
+
+.toast-info {
+    background: #1d2118;
+    border: 1px solid #2f3329;
+    border-left: 3px solid #4a5c3f;
+    color: #9a9d8a;
+}
+
+.toast-icon {
+    font-size: 9px;
+    font-weight: 800;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+/* ── DIVIDER ──────────────────────────────────────────────── */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: #5a5e50;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #252820;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .auth-page {
+        grid-template-columns: 1fr;
+    }
+    .auth-brand {
+        display: none;
+    }
+    .auth-form-panel {
+        padding: 40px 24px;
+        min-height: 100vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-form-panel {
+        padding: 28px 16px;
+    }
+    .role-selector {
+        grid-template-columns: 1fr;
+    }
+    .toast {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        max-width: none;
+    }
+}

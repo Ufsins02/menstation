@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base" content="http://localhost:3000">
+    <title>MenStation - Barber Dashboard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/owner.css">
+    <link rel="stylesheet" href="assets/css/barber.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="dashboard">
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-text">MEN<span>STA</span></div>
+        <div class="sidebar-logo-sub">Barber Portal</div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">My Day</div>
+        <div class="nav-item active" data-page="schedule">
+            <span class="nav-icon nav-icon-sq"></span>Schedule
+        </div>
+
+        <div class="nav-section-title">Performance</div>
+        <div class="nav-item" data-page="earnings">
+            <span class="nav-icon nav-icon-bar"></span>Commission
+        </div>
+        <div class="nav-item" data-page="history">
+            <span class="nav-icon nav-icon-dash"></span>History
+        </div>
+
+        <div class="nav-section-title">Account</div>
+        <div class="nav-item" data-page="profile">
+            <span class="nav-icon nav-icon-dot"></span>Profile
+        </div>
+    </nav>
+
+    <div class="sidebar-user">
+        <div class="avatar" id="sidebar-avatar">?</div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebar-name">Loading...</div>
+            <div class="sidebar-user-role" style="color:#5d7350;">Barber</div>
+        </div>
+        <button class="sidebar-logout" onclick="logout()" title="Logout">OUT</button>
+    </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main class="main-content">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebar-toggle">&#9776;</button>
+            <div>
+                <div class="topbar-title" id="page-title">Schedule</div>
+                <div class="topbar-subtitle" id="page-subtitle">Your reservations for today</div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <span class="topbar-date" id="topbar-date"></span>
+        </div>
+    </header>
+
+    <div class="page-content">
+
+        <!-- ═══ SCHEDULE ═══ -->
+        <section class="page-section active" id="page-schedule">
+            <div class="page-header">
+                <div>
+                    <h2>My Schedule</h2>
+                    <p>Reservations assigned to you</p>
+                </div>
+                <div style="display:flex;gap:10px;align-items:center;">
+                    <input type="date" id="schedule-date" style="width:160px;">
+                    <button class="btn btn-secondary btn-sm"
+                        onclick="loadSchedule(document.getElementById('schedule-date').value)">
+                        Filter
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stat strip -->
+            <div class="today-strip" style="margin-bottom:20px;">
+                <div class="today-strip-item">
+                    <div class="today-strip-value" id="stat-today-res" style="color:#5d7350;">0</div>
+                    <div class="today-strip-label">Today's Bookings</div>
+                </div>
+                <div class="today-strip-item">
+                    <div class="today-strip-value" id="stat-today-earn">PHP 0.00</div>
+                    <div class="today-strip-label">Today's Earnings</div>
+                </div>
+                <div class="today-strip-item">
+                    <div class="today-strip-value" id="stat-month-earn" style="color:#5d7350;">PHP 0.00</div>
+                    <div class="today-strip-label">Month Earnings</div>
+                </div>
+                <div class="today-strip-item">
+                    <div class="today-strip-value" id="stat-month-cust">0</div>
+                    <div class="today-strip-label">Month Customers</div>
+                </div>
+            </div>
+
+            <!-- Reservations table -->
+            <div class="table-card">
+                <div class="table-card-header">
+                    <span class="table-card-title">Reservation List</span>
+                    <span id="schedule-date-label" style="font-size:12px;color:var(--text-muted);"></span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="schedule-tbody">
+                            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">
+                                Loading...
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ COMMISSION ═══ -->
+        <section class="page-section" id="page-earnings">
+            <div class="page-header">
+                <h2>Commission Overview</h2>
+                <p>Your daily and weekly earnings breakdown</p>
+            </div>
+
+            <!-- Commission hero -->
+            <div class="commission-hero" style="margin-bottom:20px;">
+                <div class="commission-hero-item today-highlight">
+                    <div class="commission-hero-label">Today's Earnings</div>
+                    <div class="commission-hero-value" id="earn-today">PHP 0.00</div>
+                    <div class="commission-hero-sub" id="earn-today-sub">0 customers</div>
+                </div>
+                <div class="commission-hero-item">
+                    <div class="commission-hero-label">This Month</div>
+                    <div class="commission-hero-value" id="earn-month">PHP 0.00</div>
+                    <div class="commission-hero-sub" id="earn-month-sub">0 customers</div>
+                </div>
+                <div class="commission-hero-item">
+                    <div class="commission-hero-label">My Commission Rate</div>
+                    <div class="commission-hero-value" id="earn-rate" style="font-size:36px;">0%</div>
+                    <div class="commission-hero-sub">of each service</div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="card" style="margin-bottom:20px;">
+                <div class="card-header">
+                    <span class="card-title">Daily Earnings - Last 7 Days</span>
+                </div>
+                <div class="chart-wrapper" style="height:220px;">
+                    <canvas id="commission-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Monthly table -->
+            <div class="table-card">
+                <div class="table-card-header">
+                    <span class="table-card-title">This Month's Services</span>
+                    <span id="earn-total-rev" style="font-size:13px;color:var(--text-muted);">Total: PHP 0.00</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Service</th>
+                                <th>Revenue</th>
+                                <th>Commission</th>
+                            </tr>
+                        </thead>
+                        <tbody id="earnings-tbody">
+                            <tr><td colspan="4" style="text-align:center;padding:32px;color:var(--text-muted);">
+                                Loading...
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ HISTORY ═══ -->
+        <section class="page-section" id="page-history">
+            <div class="page-header">
+                <div>
+                    <h2>Service History</h2>
+                    <p>All completed services log</p>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="date" id="hist-from" style="width:150px;">
+                    <input type="date" id="hist-to" style="width:150px;">
+                    <button class="btn btn-secondary btn-sm" onclick="loadHistory()">Filter</button>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-card-header">
+                    <span class="table-card-title">Transaction Log</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Service</th>
+                                <th>Customer</th>
+                                <th>Revenue</th>
+                                <th>Commission</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody">
+                            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">
+                                Select a date range and click Filter.
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ PROFILE ═══ -->
+        <section class="page-section" id="page-profile">
+            <div class="page-header">
+                <h2>My Profile</h2>
+                <p>Account information and settings</p>
+            </div>
+
+            <div class="card" style="max-width:760px;margin-bottom:20px;">
+                <div style="text-align:center;margin-bottom:20px;">
+                    <div class="profile-photo-preview" id="p-photo-preview">
+                        <span id="p-avatar">?</span>
+                        <img id="p-photo" alt="Profile photo">
+                    </div>
+                    <div style="font-size:20px;font-weight:700;" id="p-name">-</div>
+                    <div style="color:#5d7350;font-size:12px;text-transform:uppercase;
+                                letter-spacing:1px;margin-top:4px;">Barber</div>
+                </div>
+                <div class="divider"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;
+                                    letter-spacing:1px;margin-bottom:4px;">Email</div>
+                        <div id="p-email" style="font-size:13px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;
+                                    letter-spacing:1px;margin-bottom:4px;">Phone</div>
+                        <div id="p-phone" style="font-size:13px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;
+                                    letter-spacing:1px;margin-bottom:4px;">Branch</div>
+                        <div id="p-branch" style="font-size:13px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;
+                                    letter-spacing:1px;margin-bottom:4px;">Specialization</div>
+                        <div id="p-specialization" style="font-size:13px;">-</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;
+                                    letter-spacing:1px;margin-bottom:4px;">Commission Rate</div>
+                        <div id="p-commission" style="font-size:22px;font-weight:700;color:#5d7350;">-%</div>
+                    </div>
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;
+                                    letter-spacing:1px;margin-bottom:4px;">Member Since</div>
+                        <div id="p-member-since" style="font-size:13px;">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Edit Profile</span>
+                    </div>
+                    <form id="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="profile-full-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Nickname</label>
+                                <input type="text" id="profile-nickname" placeholder="Optional">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Specialization</label>
+                            <input type="text" id="profile-specialization" placeholder="e.g. Grooming specialist">
+                        </div>
+                        <div class="form-group">
+                            <label>Bio</label>
+                            <textarea id="profile-bio" rows="4" placeholder="Short public bio"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Profile Photo URL</label>
+                            <input type="text" id="profile-photo-url" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>Upload Profile Photo</label>
+                            <input type="file" id="profile-photo-file" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="btn-save-profile">
+                            Save Profile
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">My Works</span>
+                    </div>
+                    <form id="work-image-form">
+                        <div class="form-group">
+                            <label>Work Image URL</label>
+                            <input type="url" id="work-image-url" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>Upload Work Image</label>
+                            <input type="file" id="work-image-file" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="btn-add-work">
+                            Add Work Image
+                        </button>
+                    </form>
+                    <div class="works-grid" id="works-grid">
+                        <div class="works-empty">No work images uploaded yet.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change password -->
+            <div class="card" style="max-width:760px;margin-top:20px;">
+                <div class="card-header">
+                    <span class="card-title">Change Password</span>
+                </div>
+                <form id="change-pw-form">
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" id="pw-current" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="pw-new" required placeholder="Min 6 characters">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="pw-confirm" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btn-change-pw">
+                        Update Password
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </div><!-- end page-content -->
+</main>
+
+</div><!-- end dashboard -->
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/barber.js"></script>
+</body>
+</html>

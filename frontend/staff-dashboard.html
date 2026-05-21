@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base" content="http://localhost:3000">
+    <title>MenStation - Staff Dashboard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/owner.css">
+    <link rel="stylesheet" href="assets/css/staff.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="dashboard">
+
+<!-- ════════════════ SIDEBAR ════════════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-text">MEN<span>STA</span></div>
+        <div class="sidebar-logo-sub">Staff - Cashier</div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Today</div>
+        <div class="nav-item active" data-page="pos">
+            <span class="nav-icon nav-icon-sq"></span>Point of Sale
+        </div>
+        <div class="nav-item" data-page="reservations">
+            <span class="nav-icon nav-icon-dot"></span>Reservations
+        </div>
+        <div class="nav-item" data-page="calendar">
+            <span class="nav-icon nav-icon-sq"></span>Calendar
+        </div>
+
+        <div class="nav-section-title">Records</div>
+        <div class="nav-item" data-page="sales">
+            <span class="nav-icon nav-icon-bar"></span>Sales Log
+        </div>
+        <div class="nav-item" data-page="inventory">
+            <span class="nav-icon nav-icon-dot"></span>Inventory
+        </div>
+    </nav>
+
+    <div class="sidebar-user">
+        <div class="avatar" id="sidebar-avatar">?</div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebar-name">Loading...</div>
+            <div class="sidebar-user-role" style="color:var(--status-blue,#405870);">
+                Staff
+            </div>
+        </div>
+        <button class="sidebar-logout" onclick="logout()" title="Logout">OUT</button>
+    </div>
+</aside>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<main class="main-content">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebar-toggle">&#9776;</button>
+            <div>
+                <div class="topbar-title" id="page-title">Point of Sale</div>
+                <div class="topbar-subtitle" id="page-subtitle">Record a walk-in or reservation service</div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <span class="topbar-date" id="topbar-date"></span>
+        </div>
+    </header>
+
+    <div class="page-content">
+
+        <!-- ═══════════════ POS PAGE ═══════════════ -->
+        <section class="page-section active" id="page-pos">
+            <div class="page-header">
+                <div>
+                    <h2>Point of Sale</h2>
+                    <p>Record a completed service. Price is set from the service menu - no manual override.</p>
+                </div>
+            </div>
+
+            <!-- Branch stats strip -->
+            <div class="today-strip" style="margin-bottom:20px;">
+                <div class="today-strip-item">
+                    <div class="today-strip-value" id="stat-today-count">0</div>
+                    <div class="today-strip-label">Sales Today</div>
+                </div>
+                <div class="today-strip-item">
+                    <div class="today-strip-value" id="stat-today-sales">PHP 0.00</div>
+                    <div class="today-strip-label">Revenue Today</div>
+                </div>
+                <div class="today-strip-item">
+                    <div class="today-strip-value" id="stat-barbers">0</div>
+                    <div class="today-strip-label">Active Barbers</div>
+                </div>
+                <div class="today-strip-item">
+                    <div class="today-strip-value" id="stat-reservations">0</div>
+                    <div class="today-strip-label">Today's Bookings</div>
+                </div>
+            </div>
+
+            <!-- Two-column layout: form + receipt preview -->
+            <div class="pos-layout">
+
+                <!-- Sale Form -->
+                <div class="card pos-form-card">
+                    <div class="card-header">
+                        <span class="card-title">New Sale</span>
+                        <span class="card-subtitle" id="pos-date-label"></span>
+                    </div>
+
+                    <form id="pos-form">
+
+                        <!-- Barber selector -->
+                        <div class="form-group">
+                            <label for="pos-barber">Barber *</label>
+                            <select id="pos-barber" required>
+                                <option value="">Select barber...</option>
+                            </select>
+                        </div>
+
+                        <!-- Service selector -->
+                        <div class="form-group">
+                            <label for="pos-service">Service *</label>
+                            <select id="pos-service" required>
+                                <option value="">Select service...</option>
+                            </select>
+                        </div>
+
+                        <!-- Customer info -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pos-customer">Customer Name</label>
+                                <input type="text" id="pos-customer" placeholder="Walk-in">
+                            </div>
+                            <div class="form-group">
+                                <label for="pos-payment">Payment Method</label>
+                                <select id="pos-payment">
+                                    <option value="cash">Cash</option>
+                                    <option value="gcash">GCash</option>
+                                    <option value="card">Card</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Link to reservation (optional) -->
+                        <div class="form-group">
+                            <label for="pos-reservation">Link to Reservation (optional)</label>
+                            <select id="pos-reservation">
+                                <option value="">Walk-in (no reservation)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pos-notes">Notes</label>
+                            <input type="text" id="pos-notes" placeholder="Optional notes">
+                        </div>
+
+                        <!-- Price preview (read-only - enforced by backend) -->
+                        <div class="pos-price-preview hidden" id="pos-price-preview">
+                            <div class="pos-price-label">Service Price</div>
+                            <div class="pos-price-amount" id="pos-price-display">PHP 0.00</div>
+                            <div class="pos-price-note">
+                                Price is fixed from the service menu. Contact admin to change prices.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" id="pos-btn">
+                            Record Sale
+                        </button>
+
+                    </form>
+                </div>
+
+                <!-- Today's receipts (right column) -->
+                <div class="card pos-receipt-card">
+                    <div class="card-header">
+                        <span class="card-title">Today's Sales</span>
+                        <span id="pos-total-label"
+                              style="font-size:13px;color:var(--text-muted);">Total: PHP 0.00</span>
+                    </div>
+                    <div class="table-wrapper" style="border:none;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Barber</th>
+                                    <th>Service</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pos-today-tbody">
+                                <tr><td colspan="4"
+                                    style="text-align:center;padding:28px;color:var(--text-muted);">
+                                    No sales recorded today yet.
+                                </td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div><!-- end pos-layout -->
+        </section>
+
+        <section class="page-section" id="page-calendar">
+            <div class="page-header">
+                <div>
+                    <h2>Reservation Calendar</h2>
+                    <p>Read-only monthly booking view for your branch</p>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="month" id="calendar-month" style="width:160px;">
+                    <button class="btn btn-secondary btn-sm" onclick="loadCalendar()">Load</button>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-card-header">
+                    <span class="table-card-title">Calendar List</span>
+                    <span id="calendar-count" style="font-size:12px;color:var(--text-muted);">0 bookings</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Customer</th>
+                                <th>Barber</th>
+                                <th>Service</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calendar-tbody">
+                            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--text-muted);">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════ RESERVATIONS PAGE ═══════════════ -->
+        <section class="page-section" id="page-reservations">
+            <div class="page-header">
+                <div>
+                    <h2>Reservations</h2>
+                    <p>Today's booking schedule for your branch</p>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input type="date" id="res-date" style="width:160px;">
+                    <button class="btn btn-secondary btn-sm"
+                        onclick="loadReservations(document.getElementById('res-date').value)">
+                        Filter
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-card-header">
+                    <span class="table-card-title">Booking List</span>
+                    <span id="res-date-label"
+                          style="font-size:12px;color:var(--text-muted);"></span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Customer</th>
+                                <th>Barber</th>
+                                <th>Service</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="res-tbody">
+                            <tr><td colspan="6"
+                                style="text-align:center;padding:32px;color:var(--text-muted);">
+                                Loading...
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════ SALES LOG PAGE ═══════════════ -->
+        <section class="page-section" id="page-sales">
+            <div class="page-header">
+                <div>
+                    <h2>Sales Log</h2>
+                    <p>Transaction history for your branch</p>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                    <input type="date" id="sales-from" style="width:150px;">
+                    <input type="date" id="sales-to"   style="width:150px;">
+                    <button class="btn btn-secondary btn-sm" onclick="loadSalesLog()">
+                        Filter
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-row" style="margin-bottom:16px;">
+                <div class="summary-pill">
+                    <div class="sp-label">Total Revenue</div>
+                    <div class="sp-val" id="log-total-rev">PHP 0.00</div>
+                </div>
+                <div class="summary-pill">
+                    <div class="sp-label">Transactions</div>
+                    <div class="sp-val" id="log-total-count">0</div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-card-header">
+                    <span class="table-card-title">Transactions</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Barber</th>
+                                <th>Service</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sales-log-tbody">
+                            <tr><td colspan="6"
+                                style="text-align:center;padding:32px;color:var(--text-muted);">
+                                Select a date range and click Filter.
+                            </td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="page-section" id="page-inventory">
+            <div class="page-header">
+                <div>
+                    <h2>Inventory Usage</h2>
+                    <p>Record stock usage. Staff cannot add or delete inventory items.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="loadInventory()">Refresh</button>
+            </div>
+
+            <div class="card" style="margin-bottom:16px;">
+                <div class="card-header">
+                    <span class="card-title">Update Stock Quantity</span>
+                    <span class="card-subtitle">Enter quantity used to reduce current stock</span>
+                </div>
+                <form id="inventory-usage-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="inventory-item">Item *</label>
+                            <select id="inventory-item" required>
+                                <option value="">Select item...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="inventory-used">Quantity Used *</label>
+                            <input type="number" id="inventory-used" min="0.01" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inventory-reason">Notes</label>
+                        <input type="text" id="inventory-reason" placeholder="Example: product used for service">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" id="inventory-update-btn">Update Stock</button>
+                </form>
+            </div>
+
+            <div class="table-card">
+                <div class="table-card-header">
+                    <span class="table-card-title">Stock List</span>
+                    <span id="inventory-count" style="font-size:12px;color:var(--text-muted);">0 items</span>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th>Unit</th>
+                                <th>Stock</th>
+                                <th>Reorder Level</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-tbody">
+                            <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- end page-content -->
+</main>
+
+</div><!-- end dashboard -->
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/staff.js"></script>
+</body>
+</html>

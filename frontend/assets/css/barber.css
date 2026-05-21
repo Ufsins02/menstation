@@ -1,0 +1,416 @@
+/* ============================================================
+   frontend/assets/css/barber.css
+   Barber Dashboard — extends owner.css base layout
+   Adds barber-specific commission, sales entry styling
+   ============================================================ */
+
+/* ── COMMISSION HERO CARD ─────────────────────────────────── */
+.commission-hero {
+    background: linear-gradient(135deg, #0f1f1a 0%, #1b3a2f 50%, #0f1f1a 100%);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.commission-hero::before {
+    content: '✂';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 180px;
+    opacity: 0.04;
+    pointer-events: none;
+    color: var(--accent);
+}
+
+.commission-hero-item {
+    text-align: center;
+    padding: 16px;
+    border-radius: var(--radius);
+    background: rgba(255,255,255,0.03);
+}
+
+.commission-hero-item + .commission-hero-item {
+    border-left: 1px solid var(--border);
+}
+
+.commission-hero-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.commission-hero-value {
+    font-family: var(--font-display);
+    font-size: 38px;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 6px;
+}
+
+.commission-hero-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Today's earnings — highlighted */
+.commission-hero-item.today-highlight {
+    background: var(--accent-dim);
+    border: 1px solid rgba(163, 201, 168, 0.3);
+}
+
+.commission-hero-item.today-highlight .commission-hero-value {
+    color: #fff;
+    font-size: 48px;
+}
+
+/* ── QUICK SALE FORM CARD ─────────────────────────────────── */
+.quick-sale-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.quick-sale-header {
+    background: linear-gradient(90deg, var(--accent-dim), transparent);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quick-sale-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.quick-sale-header .header-icon {
+    font-size: 20px;
+}
+
+.quick-sale-body {
+    padding: 24px;
+}
+
+.quick-sale-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.quick-sale-submit {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.quick-sale-submit:hover {
+    background: var(--accent-hover);
+    box-shadow: var(--shadow-accent);
+}
+
+.quick-sale-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Commission preview badge */
+.commission-preview {
+    background: var(--success-dim);
+    border: 1px solid var(--success);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: var(--success);
+}
+
+.commission-preview .preview-amount {
+    font-family: var(--font-display);
+    font-size: 22px;
+}
+
+/* ── EARNINGS CHART CARD ──────────────────────────────────── */
+.barber-chart-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+/* ── SERVICE HISTORY TABLE ────────────────────────────────── */
+.history-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.history-card-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.history-card-header h3 {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* ── PROFILE CARD ─────────────────────────────────────────── */
+.barber-profile-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.barber-profile-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 32px;
+    color: #fff;
+    flex-shrink: 0;
+    border: 3px solid var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.barber-profile-info { flex: 1; }
+
+.barber-profile-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.barber-profile-role {
+    color: var(--accent);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.barber-profile-details {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.barber-profile-detail {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.barber-profile-commission {
+    text-align: right;
+}
+
+.barber-profile-commission-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.barber-profile-commission-value {
+    font-family: var(--font-display);
+    font-size: 42px;
+    color: var(--accent);
+    line-height: 1;
+}
+
+.barber-profile-commission-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ── TODAY'S SALES MINI STRIP ─────────────────────────────── */
+.today-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.today-strip-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.today-strip-item:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+
+.today-strip-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.today-strip-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+/* ── BARBER SIDEBAR: role label ───────────────────────────── */
+.sidebar-user-role.barber-role {
+    color: #3498db;
+}
+
+.commission-hero::before {
+    content: '' !important;
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
+    gap: 20px;
+    max-width: 980px;
+}
+
+.profile-photo-preview {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    background: var(--accent);
+    border: 3px solid rgba(93,115,80,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 30px;
+}
+
+.profile-photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+}
+
+.profile-photo-preview.has-image span { display: none; }
+.profile-photo-preview.has-image img { display: block; }
+
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.work-thumb {
+    aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    position: relative;
+}
+
+.work-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.work-delete-btn {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    background: rgba(20, 20, 20, 0.82);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 6px;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.work-delete-btn:hover {
+    background: var(--danger-dim);
+}
+
+.works-empty {
+    grid-column: 1 / -1;
+    color: var(--text-muted);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: 28px 16px;
+    text-align: center;
+    font-size: 13px;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .commission-hero { grid-template-columns: 1fr; }
+    .commission-hero-item + .commission-hero-item { border-left: none; border-top: 1px solid var(--border); }
+    .quick-sale-grid { grid-template-columns: 1fr 1fr; }
+    .barber-chart-grid { grid-template-columns: 1fr; }
+    .profile-grid { grid-template-columns: 1fr; }
+    .barber-profile-card { flex-direction: column; text-align: center; }
+    .barber-profile-details { justify-content: center; }
+    .barber-profile-commission { text-align: center; }
+    .today-strip { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 480px) {
+    .quick-sale-grid { grid-template-columns: 1fr; }
+    .works-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .today-strip { grid-template-columns: 1fr 1fr; }
+    .commission-hero-value { font-size: 30px; }
+}

@@ -1,0 +1,218 @@
+/* ============================================================
+   staff.css — Staff Dashboard Component Styles
+   POS layout, price preview, reservation action buttons
+   Reuses: main.css variables, owner.css layout classes,
+           barber.css today-strip
+   ============================================================ */
+
+/* ── Import today-strip from barber.css if not already loaded ─
+   (staff-dashboard.html loads owner.css + staff.css, NOT barber.css)
+   We redeclare the today-strip here for staff pages)          */
+
+.today-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.today-strip-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.today-strip-item:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+}
+
+.today-strip-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.today-strip-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* ── POS LAYOUT — two-column: form left, receipts right ────── */
+.pos-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.pos-form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+.pos-receipt-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+}
+
+/* ── PRICE PREVIEW — read-only display shown after service pick */
+.pos-price-preview {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--success);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.pos-price-preview.hidden {
+    display: none;
+}
+
+.pos-price-left {
+    flex: 1;
+}
+
+.pos-price-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.pos-price-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.pos-price-amount {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--success);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ── RESERVATION ACTION BUTTONS ────────────────────────────── */
+.res-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Complete button — primary green */
+.btn-complete {
+    background: var(--success);
+    color: #fff;
+    border: 1px solid var(--success);
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: var(--font-body);
+}
+
+.btn-complete:hover {
+    background: #27ae60;
+    border-color: #27ae60;
+}
+
+.btn-complete:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Cancel button — muted red */
+.btn-cancel-res {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: var(--font-body);
+}
+
+.btn-cancel-res:hover {
+    background: var(--danger-dim);
+}
+
+/* ── STATUS BADGES — reservation states ─────────────────────── */
+.badge-pending     { background: var(--warning-dim); color: var(--warning);
+                     border: 1px solid rgba(243,156,18,0.25); }
+.badge-confirmed   { background: var(--info-dim);    color: var(--info);
+                     border: 1px solid rgba(52,152,219,0.25); }
+.badge-in-progress { background: rgba(74,92,63,0.15);color: #5d7350;
+                     border: 1px solid rgba(74,92,63,0.3); }
+.badge-done        { background: var(--success-dim); color: var(--success);
+                     border: 1px solid rgba(46,204,113,0.25); }
+.badge-cancelled   { background: var(--danger-dim);  color: var(--danger);
+                     border: 1px solid rgba(231,76,60,0.25); }
+
+/* ── PAYMENT BADGE COLOURS ────────────────────────────────────*/
+.badge-cash  { background: var(--info-dim);    color: var(--info);
+               border: 1px solid rgba(52,152,219,0.2); }
+.badge-gcash { background: var(--success-dim); color: var(--success);
+               border: 1px solid rgba(46,204,113,0.2); }
+.badge-card  { background: rgba(74,92,63,0.15); color: #5d7350;
+               border: 1px solid rgba(74,92,63,0.2); }
+
+/* ── SALE SUCCESS FLASH ───────────────────────────────────────
+   Brief green border on the POS form after a successful sale  */
+.pos-form-card.sale-success {
+    border-color: var(--success);
+    transition: border-color 0.3s ease;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────*/
+@media (max-width: 1024px) {
+    .pos-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 900px) {
+    .today-strip {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .today-strip {
+        grid-template-columns: 1fr 1fr;
+    }
+    .res-actions {
+        flex-direction: column;
+    }
+}

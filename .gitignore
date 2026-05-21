@@ -1,0 +1,9 @@
+.env
+node_modules/
+npm-debug.log*
+server-*.out.txt
+server-*.err.txt
+server-validation*.out.txt
+server-validation*.err.txt
+frontend/uploads/services/*
+!frontend/uploads/services/.gitkeep

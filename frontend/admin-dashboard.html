@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="api-base" content="http://localhost:3000">
+    <title>MenStation — Admin Dashboard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/owner.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="dashboard">
+
+<!-- ═══════════════════════════════════════════════
+     SIDEBAR
+═══════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-text">MEN<span>STATION</span></div>
+        <div class="sidebar-logo-sub">Command Center</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Overview</div>
+        <div class="nav-item active" data-page="dashboard">
+            <span class="nav-icon nav-icon-sq"></span><span>Dashboard</span>
+        </div>
+        <div class="nav-section-title">Management</div>
+        <div class="nav-item" data-page="sales">
+            <span class="nav-icon nav-icon-tri"></span><span>Sales</span>
+        </div>
+        <div class="nav-item" data-page="barbers">
+            <span class="nav-icon nav-icon-dia"></span><span>Barbers</span>
+        </div>
+        <div class="nav-item" data-page="services">
+            <span class="nav-icon nav-icon-dash"></span><span>Services</span>
+        </div>
+        <!-- Payroll removed -->
+        <div class="nav-section-title">Finance</div>
+        <div class="nav-item" data-page="expenses">
+            <span class="nav-icon nav-icon-tri-d"></span><span>Expenses</span>
+        </div>
+        <div class="nav-item" data-page="reports">
+            <span class="nav-icon nav-icon-tri"></span><span>Reports</span>
+        </div>
+        <div class="nav-section-title">Operations</div>
+        <div class="nav-item" data-page="inventory">
+            <span class="nav-icon nav-icon-sq"></span><span>Inventory</span>
+        </div>
+        <div class="nav-item" data-page="notifications">
+            <span class="nav-icon nav-icon-dot"></span><span>Notifications</span>
+            <span class="nav-badge hidden" id="notif-nav-badge">0</span>
+        </div>
+    </nav>
+    <div class="sidebar-user">
+        <div class="avatar" id="sidebar-avatar">--</div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-name" id="sidebar-name">Loading...</div>
+            <div class="sidebar-user-role">OWNER</div>
+        </div>
+        <button class="sidebar-logout" onclick="logout()" title="Logout">OUT</button>
+    </div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════════════ -->
+<main class="main-content">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button class="sidebar-toggle" id="sidebar-toggle">&#9776;</button>
+            <div>
+                <div class="topbar-title" id="page-title">Dashboard</div>
+                <div class="topbar-subtitle" id="page-subtitle">Shop overview</div>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <select id="admin-branch-filter" title="Branch filter">
+                <option value="">All Branches</option>
+            </select>
+            <span class="topbar-date" id="topbar-date"></span>
+            <div class="notif-wrapper">
+                <button class="notif-btn" id="notif-btn">
+                    <span class="notif-btn-label">ALERTS</span>
+                    <span class="notif-dot hidden" id="notif-dot"></span>
+                </button>
+                <div class="notif-dropdown" id="notif-dropdown">
+                    <div class="notif-dropdown-header">
+                        <span>Notifications</span>
+                        <button class="notif-mark-all-btn" onclick="markAllNotifsRead()">Mark all read</button>
+                    </div>
+                    <div id="notif-list">
+                        <div class="empty-state" style="padding:20px"><p>No notifications</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-content">
+
+    <!-- ══════════════════════════════════════
+         DASHBOARD PAGE
+    ══════════════════════════════════════ -->
+    <section class="page-section active" id="page-dashboard">
+        <div class="page-header">
+            <div class="page-header-left">
+                <h2>Welcome, <span id="owner-name">Admin</span></h2>
+                <p id="dashboard-date-label">Loading...</p>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="loadDashboard()">Refresh Data</button>
+        </div>
+
+        <div class="alert-banner alert-warning hidden" id="low-stock-alert">
+            <strong id="low-stock-count">0</strong> inventory item(s) are below reorder level &mdash;
+            <a href="#" onclick="showPage('inventory')" class="alert-link">View Inventory</a>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Today's Revenue</div>
+                <div class="stat-value" id="stat-today">--</div>
+                <div class="stat-sub" id="stat-today-sub">0 customers</div>
+                <div class="stat-indicator"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Monthly Revenue</div>
+                <div class="stat-value" id="stat-monthly">--</div>
+                <div class="stat-sub">This month</div>
+                <div class="stat-indicator"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Monthly Expenses</div>
+                <div class="stat-value sv-warn" id="stat-expenses">--</div>
+                <div class="stat-sub">This month</div>
+                <div class="stat-indicator si-warn"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Net Profit</div>
+                <div class="stat-value sv-green" id="stat-profit">--</div>
+                <div class="stat-sub">Revenue minus expenses</div>
+                <div class="stat-indicator si-green" id="ind-profit"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Barbers</div>
+                <div class="stat-value" id="stat-barbers">--</div>
+                <div class="stat-sub">On staff</div>
+                <div class="stat-indicator"></div>
+            </div>
+            <div class="stat-card" id="stat-pending-card" style="cursor:pointer;" onclick="showPage('barbers')" title="Click to review pending barbers">
+                <div class="stat-label">Pending Approval</div>
+                <div class="stat-value sv-warn" id="stat-pending">0</div>
+                <div class="stat-sub" id="stat-pending-sub">No pending requests</div>
+                <div class="stat-indicator si-warn" id="ind-pending"></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Today's Customers</div>
+                <div class="stat-value" id="stat-customers">--</div>
+                <div class="stat-sub">Served today</div>
+                <div class="stat-indicator"></div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="charts-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Revenue &mdash; Last 7 Days</span>
+                    <span class="card-badge" id="chart-total-label"></span>
+                </div>
+                <div class="chart-wrapper"><canvas id="salesChart"></canvas></div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Top Barbers This Month</span>
+                </div>
+                <div class="barber-list" id="barber-perf-list">
+                    <div class="empty-state"><p>Loading...</p></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Quick actions + Recent sales -->
+        <div class="dash-bottom-grid">
+            <div class="card">
+                <div class="card-header"><span class="card-title">Quick Actions</span></div>
+                <div class="quick-actions-grid">
+                    <button class="quick-action-btn" onclick="openAddSaleModal()">
+                        <span class="qa-icon">+</span><span>Record Sale</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="openAddExpenseModal()">
+                        <span class="qa-icon">-</span><span>Log Expense</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="showPage('barbers');setTimeout(openAddBarberModal,200)">
+                        <span class="qa-icon">+</span><span>Add Barber</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="showPage('inventory')">
+                        <span class="qa-icon">*</span><span>Check Stock</span>
+                    </button>
+                    <button class="quick-action-btn" onclick="showPage('reports')">
+                        <span class="qa-icon">=</span><span>View Report</span>
+                    </button>
+                    <!-- Payroll quick action removed -->
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Recent Transactions</span>
+                    <button class="btn btn-secondary btn-sm" onclick="showPage('sales')">View All</button>
+                </div>
+                <div class="table-wrapper" style="border:none;">
+                    <table>
+                        <thead><tr><th>Barber</th><th>Service</th><th>Amt</th><th>Date</th></tr></thead>
+                        <tbody id="recent-sales-tbody">
+                            <tr><td colspan="4" class="text-center text-muted" style="padding:16px">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SALES PAGE
+    ══════════════════════════════════════ -->
+    <section class="page-section" id="page-sales">
+        <div class="page-header">
+            <div><h2>Sales &amp; Transactions</h2><p>All recorded service transactions</p></div>
+            <button class="btn btn-primary" onclick="openAddSaleModal()">+ Record Sale</button>
+        </div>
+
+        <div class="summary-row" id="sales-summary-row">
+            <div class="summary-pill"><div class="sp-label">Total Revenue</div><div class="sp-val" id="sales-sum-revenue">--</div></div>
+            <div class="summary-pill"><div class="sp-label">Transactions</div><div class="sp-val" id="sales-sum-count">--</div></div>
+            <div class="summary-pill"><div class="sp-label">Commissions</div><div class="sp-val" id="sales-sum-commission">--</div></div>
+            <div class="summary-pill"><div class="sp-label">Avg. per Sale</div><div class="sp-val" id="sales-sum-avg">--</div></div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-card-header">
+                <span class="table-card-title">Sales History</span>
+                <div class="filter-row">
+                    <input type="date" id="sales-date-from">
+                    <input type="date" id="sales-date-to">
+                    <select id="sales-barber-filter"><option value="">All Barbers</option></select>
+                    <select id="sales-branch-filter" onchange="setAdminBranchFilter(this.value)">
+                        <option value="">All Branches</option>
+                    </select>
+                    <select id="sales-payment-filter">
+                        <option value="">All Methods</option>
+                        <option value="cash">Cash</option>
+                        <option value="gcash">GCash</option>
+                        <option value="card">Card</option>
+                    </select>
+                    <button class="btn btn-secondary btn-sm" onclick="loadSales()">Filter</button>
+                    <button class="btn btn-outline btn-sm" onclick="exportSalesCSV()">Export</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Date</th><th>Barber</th><th>Service</th><th>Customer</th><th>Amount</th><th>Commission</th><th>Payment</th><th>Action</th></tr></thead>
+                    <tbody id="sales-table-body">
+                        <tr><td colspan="8" class="text-center text-muted" style="padding:32px">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         BARBERS PAGE
+    ══════════════════════════════════════ -->
+    <section class="page-section" id="page-barbers">
+        <div class="page-header">
+            <div><h2>Barber Management</h2><p>Manage staff, commissions and performance</p></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-secondary" onclick="openAddStaffModal()">+ Add Staff</button>
+                <button class="btn btn-primary" onclick="openAddBarberModal()">+ Add Barber</button>
+            </div>
+        </div>
+
+        <!-- ── PENDING APPROVALS PANEL ─────────────────────── -->
+        <div id="pending-barbers-panel" class="table-card" style="margin-bottom:20px;border-color:rgba(138,112,64,0.4);display:none;">
+            <div class="table-card-header" style="background:rgba(138,112,64,0.1);">
+                <span class="table-card-title" style="color:var(--status-amber);">
+                    Pending Approvals
+                </span>
+                <span id="pending-count-badge" class="badge badge-warning">0 pending</span>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Specialization</th>
+                            <th>Applied</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pending-barbers-tbody">
+                        <tr><td colspan="6" class="text-center text-muted" style="padding:20px">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="barber-cards-grid" id="barber-cards-grid">
+            <div class="empty-state"><p>Loading barber cards...</p></div>
+        </div>
+
+        <div class="table-card" style="margin-top:20px;">
+            <div class="table-card-header">
+                <span class="table-card-title">All Staff</span>
+                <div class="filter-row">
+                    <select id="barber-status-filter" onchange="loadBarbers()">
+                        <option value="">All Status</option>
+                        <option value="approved">Approved</option>
+                        <option value="pending">Pending</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <select id="barber-branch-filter" onchange="setAdminBranchFilter(this.value)">
+                        <option value="">All Branches</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Barber</th><th>Contact</th><th>Specialization</th><th>Commission</th><th>Hire Date</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="barbers-table-body">
+                        <tr><td colspan="7" class="text-center text-muted" style="padding:32px">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SERVICES PAGE
+    ══════════════════════════════════════ -->
+    <section class="page-section" id="page-services">
+        <div class="page-header">
+            <div><h2>Service Menu</h2><p>Manage services and pricing</p></div>
+            <button class="btn btn-primary" onclick="openAddServiceModal()">+ Add Service</button>
+        </div>
+
+        <div class="table-card">
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Photo</th><th>Service</th><th>Price</th><th>Duration</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="services-table-body">
+                        <tr><td colspan="7" class="text-center text-muted" style="padding:32px">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         PAYROLL PAGE
+    ══════════════════════════════════════ -->
+    <!-- Payroll section removed -->
+
+    <!-- ══════════════════════════════════════
+         EXPENSES PAGE
+    ══════════════════════════════════════ -->
+    <section class="page-section" id="page-expenses">
+        <div class="page-header">
+            <div><h2>Expense Tracking</h2><p>Record and monitor all operating costs</p></div>
+            <button class="btn btn-primary" onclick="openAddExpenseModal()">+ Add Expense</button>
+        </div>
+
+        <div class="summary-row" id="exp-summary-row">
+            <div class="summary-pill sp-warn"><div class="sp-label">Total Expenses</div><div class="sp-val" id="exp-sum-total">--</div></div>
+            <div class="summary-pill"><div class="sp-label">Rent</div><div class="sp-val" id="exp-sum-rent">--</div></div>
+            <div class="summary-pill"><div class="sp-label">Utilities</div><div class="sp-val" id="exp-sum-utilities">--</div></div>
+            <div class="summary-pill"><div class="sp-label">Supplies</div><div class="sp-val" id="exp-sum-supplies">--</div></div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-card-header">
+                <span class="table-card-title">Expense Log</span>
+                <div class="filter-row">
+                    <input type="date" id="exp-date-from">
+                    <input type="date" id="exp-date-to">
+                    <select id="exp-category-filter">
+                        <option value="">All Categories</option>
+                        <option value="rent">Rent</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="supplies">Supplies</option>
+                        <option value="equipment">Equipment</option>
+                        <option value="salary">Salary</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <button class="btn btn-secondary btn-sm" onclick="loadExpenses()">Filter</button>
+                    <button class="btn btn-outline btn-sm" onclick="exportExpensesCSV()">Export</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Amount</th><th>Paid To</th><th>Recorded By</th><th>Action</th></tr></thead>
+                    <tbody id="expenses-table-body">
+                        <tr><td colspan="7" class="text-center text-muted" style="padding:32px">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         REPORTS PAGE
+    ══════════════════════════════════════ -->
+    <section class="page-section" id="page-reports">
+        <div class="page-header">
+            <div><h2>Monthly Reports</h2><p>Complete financial analysis</p></div>
+            <div class="filter-row">
+                <input type="month" id="report-month">
+                <button class="btn btn-primary" onclick="loadReport()">Generate</button>
+                <button class="btn btn-outline btn-sm" onclick="printReport()">Print</button>
+            </div>
+        </div>
+
+        <div class="stats-grid" style="margin-bottom:20px;">
+            <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value sv-green" id="rpt-revenue">--</div></div>
+            <div class="stat-card"><div class="stat-label">Total Expenses</div><div class="stat-value sv-warn" id="rpt-expenses">--</div></div>
+            <div class="stat-card"><div class="stat-label">Net Profit</div><div class="stat-value" id="rpt-profit">--</div></div>
+            <div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-value" id="rpt-transactions">--</div></div>
+            <div class="stat-card"><div class="stat-label">Commissions</div><div class="stat-value" id="rpt-commission">--</div></div>
+            <div class="stat-card"><div class="stat-label">Avg Daily Revenue</div><div class="stat-value" id="rpt-avg-daily">--</div></div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px;">
+            <div class="card-header"><span class="card-title">Daily Revenue Breakdown</span></div>
+            <div class="chart-wrapper" style="height:180px;"><canvas id="reportChart"></canvas></div>
+        </div>
+
+        <div class="charts-grid-equal">
+            <div class="card">
+                <div class="card-header"><span class="card-title">Top Barbers</span></div>
+                <div class="table-wrapper" style="border:none;">
+                    <table>
+                        <thead><tr><th>Barber</th><th>Customers</th><th>Revenue</th><th>Commission</th></tr></thead>
+                        <tbody id="rpt-barbers-body">
+                            <tr><td colspan="4" class="text-center text-muted" style="padding:16px">Generate a report</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><span class="card-title">Popular Services</span></div>
+                <div class="table-wrapper" style="border:none;">
+                    <table>
+                        <thead><tr><th>Service</th><th>Count</th><th>Revenue</th></tr></thead>
+                        <tbody id="rpt-services-body">
+                            <tr><td colspan="3" class="text-center text-muted" style="padding:16px">Generate a report</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         INVENTORY PAGE
+    ══════════════════════════════════════ -->
+    <section class="page-section" id="page-inventory">
+        <div class="page-header">
+            <div><h2>Inventory Management</h2><p>Track product stock levels and supplies</p></div>
+            <button class="btn btn-primary" onclick="openAddInventoryModal()">+ Add Item</button>
+        </div>
+
+        <div class="summary-row" id="inv-summary-row">
+            <div class="summary-pill"><div class="sp-label">Total Items</div><div class="sp-val" id="inv-sum-total">--</div></div>
+            <div class="summary-pill sp-warn"><div class="sp-label">Low Stock</div><div class="sp-val" id="inv-sum-low">--</div></div>
+            <div class="summary-pill sp-red"><div class="sp-label">Out of Stock</div><div class="sp-val" id="inv-sum-out">--</div></div>
+            <div class="summary-pill"><div class="sp-label">Stock Value</div><div class="sp-val" id="inv-sum-value">--</div></div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-card-header">
+                <span class="table-card-title">Stock Levels</span>
+                <div class="filter-row">
+                    <select id="inv-category-filter" onchange="loadInventory()">
+                        <option value="">All Categories</option>
+                        <option value="supplies">Supplies</option>
+                        <option value="tools">Tools</option>
+                        <option value="retail">Retail</option>
+                    </select>
+                    <select id="inv-stock-filter" onchange="loadInventory()">
+                        <option value="">All Levels</option>
+                        <option value="low">Low Stock</option>
+                        <option value="out">Out of Stock</option>
+                        <option value="ok">In Stock</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Item</th><th>Category</th><th>In Stock</th><th>Reorder At</th><th>Level</th><th>Cost/Unit</th><th>Supplier</th><th>Actions</th></tr></thead>
+                    <tbody id="inventory-table-body">
+                        <tr><td colspan="8" class="text-center text-muted" style="padding:32px">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         NOTIFICATIONS PAGE
+    ══════════════════════════════════════ -->
+    <section class="page-section" id="page-notifications">
+        <div class="page-header">
+            <div><h2>Notifications</h2><p>System alerts and updates</p></div>
+            <button class="btn btn-secondary btn-sm" onclick="markAllNotifsRead()">Mark All Read</button>
+        </div>
+        <div class="card" id="full-notif-list">
+            <div class="empty-state"><p>No notifications yet.</p></div>
+        </div>
+    </section>
+
+    </div><!-- /page-content -->
+</main>
+</div><!-- /dashboard -->
+
+<!-- ═══════════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════════ -->
+
+<!-- RECORD SALE -->
+<div class="modal-overlay" id="modal-add-sale">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Record New Sale</span>
+            <button class="modal-close" onclick="closeModal('modal-add-sale')">&#x2715;</button>
+        </div>
+        <form id="form-add-sale">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Barber *</label>
+                    <select id="sale-barber" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Service *</label>
+                    <select id="sale-service" required onchange="autoFillPrice()"></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Amount (PHP) *</label>
+                    <input type="number" id="sale-amount" min="0" step="0.01" required placeholder="0.00" oninput="updateSaleCommissionPreview()">
+                </div>
+                <div class="form-group">
+                    <label>Payment</label>
+                    <select id="sale-payment">
+                        <option value="cash">Cash</option>
+                        <option value="gcash">GCash</option>
+                        <option value="card">Card</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" id="sale-customer" placeholder="Walk-in">
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="sale-date" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="sale-notes" rows="2" placeholder="Optional..."></textarea>
+            </div>
+            <div class="commission-preview-box hidden" id="sale-commission-preview">
+                Barber commission: <strong id="sale-commission-amount">--</strong>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-sale')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-add-sale">Save Sale</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD STAFF -->
+<div class="modal-overlay" id="modal-add-staff">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Add Staff</span>
+            <button class="modal-close" onclick="closeModal('modal-add-staff')">&#x2715;</button>
+        </div>
+        <form id="form-add-staff">
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="staff-name" required placeholder="Staff name">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="staff-email" required placeholder="staff@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Password *</label>
+                    <input type="password" id="staff-password" required placeholder="Min 6 characters">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="staff-phone" placeholder="09XX XXX XXXX">
+                </div>
+                <div class="form-group">
+                    <label>Branch *</label>
+                    <select id="staff-branch" required>
+                        <option value="">Select branch...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-staff')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-add-staff">Add Staff</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD / EDIT BARBER -->
+<div class="modal-overlay" id="modal-add-barber">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="barber-modal-title">Add New Barber</span>
+            <button class="modal-close" onclick="closeModal('modal-add-barber')">&#x2715;</button>
+        </div>
+        <form id="form-add-barber">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="b-name" required placeholder="Juan dela Cruz">
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="b-email" required placeholder="barber@email.com">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="b-phone" placeholder="09XX XXX XXXX">
+                </div>
+                <div class="form-group" id="b-password-group">
+                    <label>Password *</label>
+                    <input type="password" id="b-password" placeholder="Min 6 characters">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Commission Rate (%)</label>
+                    <input type="number" id="b-commission" value="50" min="0" max="100">
+                </div>
+                <div class="form-group">
+                    <label>Hire Date</label>
+                    <input type="date" id="b-hire-date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Branch *</label>
+                <select id="b-branch" required>
+                    <option value="">Select branch...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Specialization</label>
+                <input type="text" id="b-specialization" placeholder="e.g. Grooming specialist">
+            </div>
+            <div class="form-group">
+                <label>Bio (shown on public page)</label>
+                <textarea id="b-bio" rows="2" placeholder="Short description..."></textarea>
+            </div>
+            <div class="form-group hidden" id="b-status-group">
+                <label>Status</label>
+                <select id="b-is-active">
+                    <option value="1">Active</option>
+                    <option value="0">Inactive / Deactivated</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-barber')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-add-barber">Add Barber</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD EXPENSE -->
+<div class="modal-overlay" id="modal-add-expense">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Record Expense</span>
+            <button class="modal-close" onclick="closeModal('modal-add-expense')">&#x2715;</button>
+        </div>
+        <form id="form-add-expense">
+            <div class="form-group">
+                <label>Title *</label>
+                <input type="text" id="exp-title" required placeholder="e.g. Monthly Rent, Electric Bill">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="exp-category">
+                        <option value="rent">Rent</option>
+                        <option value="utilities">Utilities</option>
+                        <option value="supplies">Supplies</option>
+                        <option value="equipment">Equipment</option>
+                        <option value="salary">Salary</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount (PHP) *</label>
+                    <input type="number" id="exp-amount" min="0" step="0.01" required placeholder="0.00">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="exp-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Paid To</label>
+                    <input type="text" id="exp-paid-to" placeholder="Vendor or person name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="exp-notes" rows="2"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-expense')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-add-expense">Save Expense</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD / EDIT INVENTORY -->
+<div class="modal-overlay" id="modal-add-inventory">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="inv-modal-title">Add Inventory Item</span>
+            <button class="modal-close" onclick="closeModal('modal-add-inventory')">&#x2715;</button>
+        </div>
+        <form id="form-add-inventory">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Item Name *</label>
+                    <input type="text" id="inv-name" required placeholder="e.g. Pomade, Clipper Oil">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="inv-category">
+                        <option value="supplies">Supplies</option>
+                        <option value="tools">Tools</option>
+                        <option value="retail">Retail</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Unit</label>
+                    <input type="text" id="inv-unit" value="pcs" placeholder="pcs, bottle, ml, g">
+                </div>
+                <div class="form-group">
+                    <label>Qty in Stock</label>
+                    <input type="number" id="inv-qty" value="0" min="0" step="0.01">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Reorder Level</label>
+                    <input type="number" id="inv-reorder" value="5" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Cost per Unit (PHP)</label>
+                    <input type="number" id="inv-cost" value="0" min="0" step="0.01">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Supplier</label>
+                <input type="text" id="inv-supplier" placeholder="Supplier name (optional)">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-inventory')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-add-inv">Add Item</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- RESTOCK -->
+<div class="modal-overlay" id="modal-restock">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title">Restock Item</span>
+            <button class="modal-close" onclick="closeModal('modal-restock')">&#x2715;</button>
+        </div>
+        <form id="form-restock">
+            <input type="hidden" id="restock-item-id">
+            <div class="restock-item-label" id="restock-item-name">Item: --</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quantity to Add *</label>
+                    <input type="number" id="restock-qty" min="0.01" step="0.01" required placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label>Total Cost (PHP)</label>
+                    <input type="number" id="restock-cost" min="0" step="0.01" value="0">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="restock-notes" rows="2" placeholder="Supplier, batch, etc."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-restock')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-restock">Confirm Restock</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ADD / EDIT SERVICE -->
+<div class="modal-overlay" id="modal-add-service">
+    <div class="modal">
+        <div class="modal-header">
+            <span class="modal-title" id="svc-modal-title">Add Service</span>
+            <button class="modal-close" onclick="closeModal('modal-add-service')">&#x2715;</button>
+        </div>
+        <form id="form-add-service">
+            <div class="form-group">
+                <label>Service Name *</label>
+                <input type="text" id="svc-name" required placeholder="Service name">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Price (PHP) *</label>
+                    <input type="number" id="svc-price" min="0" step="0.01" required placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <input type="number" id="svc-duration" value="30" min="5" step="5">
+                </div>
+                <div class="form-group">
+                    <label>Branch *</label>
+                    <select id="svc-branch" required>
+                        <option value="">Select branch...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="svc-desc" rows="2" placeholder="Brief description..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>Service Photo</label>
+                <input type="file" id="svc-image" accept="image/png,image/jpeg,image/webp">
+                <input type="hidden" id="svc-image-url">
+                <div class="service-image-preview" id="svc-image-preview">No photo selected</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-add-service')">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="btn-add-svc">Add Service</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="assets/js/api.js"></script>
+<script src="assets/js/admin.js"></script>
+</body>
+</html>
